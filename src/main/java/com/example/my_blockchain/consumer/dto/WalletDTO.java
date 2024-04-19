@@ -1,5 +1,7 @@
 package com.example.my_blockchain.consumer.dto;
 
+import com.example.my_blockchain.model.Entity.Enum.WalletType;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -12,5 +14,5 @@ public class WalletDTO {
     private String secret;
     private String saltIv;
     private String code;
-    private  WalletType type;
+    private WalletType type;
 }

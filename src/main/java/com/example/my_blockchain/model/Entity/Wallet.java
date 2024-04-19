@@ -5,7 +5,7 @@ import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
-import java.security.Signature;
+
 import java.security.spec.ECGenParameterSpec;
 import java.util.List;
 
@@ -14,6 +14,8 @@ import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
 import com.example.my_blockchain.Util.BlockchainUtil;
+import com.example.my_blockchain.model.Entity.Enum.WalletType;
+import com.example.my_blockchain.model.Entity.UDT.Transaction;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,8 +28,10 @@ import lombok.Setter;
 public class Wallet {
     @PrimaryKey
     private String address;
+    
     private String secret;
     private String salt_iv;
+    private WalletType wallet_type;
 
     private List<Transaction> transactions;
 
@@ -41,10 +45,11 @@ public class Wallet {
         this.genKeyPair();
     }
 
-    public Wallet(String address, String secret, String salt_iv, List<Transaction> transactions){
+    public Wallet(String address, String secret, String salt_iv, WalletType wallet_type, List<Transaction> transactions){
         this.address = address;
         this.secret = secret;
         this.salt_iv = salt_iv;
+        this.wallet_type = wallet_type;
         this.transactions = transactions;
         try {
             this.private_key = BlockchainUtil.getPrivateKey(this.salt_iv, this.secret, this.address);
@@ -81,42 +86,5 @@ public class Wallet {
                 "\n transactions: " + String.valueOf(this.getTransactions()) + "\n";
     }
 
-    /**
-     * Using privateKey and input data to generate ECDSA signature using Elliptic Curve algorithm
-     * @param privateKey
-     * @param data
-     * @return realSig
-     */
-    public static byte[] applySignature(PrivateKey privateKey, String data) {
-        Signature signature;
-        byte[] realSig;
-        try {
-            signature = Signature.getInstance("ECDSA", "BC");
-            signature.initSign(privateKey);
-            byte[] strByte = data.getBytes();
-            signature.update(strByte);
-            realSig = signature.sign();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return realSig;
-    }
-
-    /**
-     * Verify the signature is valid or not
-     * @param publicKey
-     * @param data
-     * @param signature
-     * @return boolean
-     */
-    public static boolean verifySignature(PublicKey publicKey, String data, byte[] signature) {
-        try {
-            Signature ecdsaVerify = Signature.getInstance("ECDSA", "BC");
-            ecdsaVerify.initVerify(publicKey);
-            ecdsaVerify.update(data.getBytes());
-            return ecdsaVerify.verify(signature);
-        }catch(Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    
 }

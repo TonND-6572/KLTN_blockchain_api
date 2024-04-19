@@ -13,6 +13,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Random;
+import java.security.Signature;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -89,5 +90,46 @@ public class BlockchainUtil {
             e.printStackTrace();
         }
         return privateKey;
+    }
+
+    /* Apply and verify signature */
+    
+    /**
+     * Using privateKey and input data to generate ECDSA signature using Elliptic Curve algorithm
+     * @param privateKey
+     * @param data
+     * @return realSig
+     */
+    public static byte[] applySignature(PrivateKey privateKey, String data) {
+        Signature signature;
+        byte[] realSig;
+        try {
+            signature = Signature.getInstance("ECDSA", "BC");
+            signature.initSign(privateKey);
+            byte[] strByte = data.getBytes();
+            signature.update(strByte);
+            realSig = signature.sign();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return realSig;
+    }
+
+    /**
+     * Verify the signature is valid or not
+     * @param publicKey
+     * @param data
+     * @param signature
+     * @return boolean
+     */
+    public static boolean verifySignature(PublicKey publicKey, String data, byte[] signature) {
+        try {
+            Signature ecdsaVerify = Signature.getInstance("ECDSA", "BC");
+            ecdsaVerify.initVerify(publicKey);
+            ecdsaVerify.update(data.getBytes());
+            return ecdsaVerify.verify(signature);
+        }catch(Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
