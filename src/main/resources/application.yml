@@ -4,8 +4,15 @@ spring:
     cassandra:
         keyspace-name: transportation_blockchain
         port: 9042
-        contact-points: 127.0.0.1 #172.17.0.2
+        contact-points: localhost
         local-datacenter: datacenter1
+    rabbitmq:
+        host: ${RABBITMQ_HOST:localhost}
+        port: ${RABBITMQ_PORT:5672}
+        username: ${RABBITMQ_USER:guest}
+        password: ${RABBITMQ_PASS:guest}
 
+rabbitmq:
+    create-wallet-queue: ${CREATE_WALLET_QUEUE:"create-wallet-queue"}
 server:
     port: 8081
