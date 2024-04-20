@@ -6,7 +6,7 @@ import org.springframework.data.cassandra.repository.CassandraRepository;
 import org.springframework.stereotype.Repository;
 // import org.springframework.data;
 
-import com.example.my_blockchain.model.Entity.Wallet;
+import com.example.my_blockchain.model.entity.Wallet;
 
 // @Repository
 @Repository

@@ -1,16 +1,18 @@
-package com.example.my_blockchain.service.Impl;
+package com.example.my_blockchain.service.impl;
 
+
+import java.util.Optional;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.my_blockchain.consumer.dto.WalletDTO;
-import com.example.my_blockchain.model.Entity.Wallet;
-import com.example.my_blockchain.model.Response.WalletResponse;
+import com.example.my_blockchain.model.entity.Wallet;
 import com.example.my_blockchain.model.mapper.WalletMapper;
+import com.example.my_blockchain.model.response.WalletResponse;
 import com.example.my_blockchain.repo.WalletRepository;
 import com.example.my_blockchain.service.WalletService;
 
-import lombok.RequiredArgsConstructor;
 
 @Service
 public class WalletServiceImpl implements WalletService {
@@ -24,9 +26,19 @@ public class WalletServiceImpl implements WalletService {
     
     @Override
     @Transactional
-    public WalletResponse createWallet(Wallet wallet) {
+    public ResponseEntity<WalletResponse> createWallet(Wallet wallet) {
         walletRepository.save(wallet);
 
-        return walletMapper.toResponse(wallet);
+        return ResponseEntity.ok(walletMapper.toResponse(wallet));
+    }
+
+    @Override
+    public Wallet getWallet(String address) {
+        Wallet wallet = walletRepository.findById(address).orElse(null);
+        if (wallet != null) {
+            wallet.genKey();
+            return wallet;
+        }
+        return null;
     }
 }

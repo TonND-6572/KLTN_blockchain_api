@@ -1,6 +1,6 @@
 package com.example.my_blockchain.consumer.dto;
 
-import com.example.my_blockchain.model.Entity.Enum.WalletType;
+import com.example.my_blockchain.model.entity.Enum.WalletType;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,5 +1,6 @@
-package com.example.my_blockchain.model.Entity;
+package com.example.my_blockchain.model.entity;
 
+import java.nio.ByteBuffer;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
@@ -10,19 +11,18 @@ import java.security.spec.ECGenParameterSpec;
 import java.util.List;
 
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.cassandra.core.mapping.Column;
+import org.springframework.data.cassandra.core.mapping.Frozen;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
-import com.example.my_blockchain.Util.BlockchainUtil;
-import com.example.my_blockchain.model.Entity.Enum.WalletType;
-import com.example.my_blockchain.model.Entity.UDT.Transaction;
+import com.example.my_blockchain.model.entity.Enum.WalletType;
+import com.example.my_blockchain.model.entity.UDT.Transaction;
+import com.example.my_blockchain.util.BlockchainUtil;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@Getter @Setter
+@Data
 @AllArgsConstructor
 @Table(value = "wallet")
 public class Wallet {
@@ -33,6 +33,7 @@ public class Wallet {
     private String salt_iv;
     private WalletType wallet_type;
 
+    @Frozen
     private List<Transaction> transactions;
 
     @Transient
@@ -41,8 +42,8 @@ public class Wallet {
     @Transient
     private PublicKey public_key;
 
-    public Wallet(){
-        this.genKeyPair();
+    public Wallet() {
+        genKeyPair();
     }
 
     public Wallet(String address, String secret, String salt_iv, WalletType wallet_type, List<Transaction> transactions){
@@ -55,6 +56,15 @@ public class Wallet {
             this.private_key = BlockchainUtil.getPrivateKey(this.salt_iv, this.secret, this.address);
             this.public_key = BlockchainUtil.getPublicKey(this.address);
         } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void genKey(){
+        try {
+            this.private_key = BlockchainUtil.getPrivateKey(this.salt_iv, this.secret, this.address);
+            this.public_key = BlockchainUtil.getPublicKey(this.address);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

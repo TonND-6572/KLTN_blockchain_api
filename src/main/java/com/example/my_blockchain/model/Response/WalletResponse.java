@@ -1,18 +1,15 @@
-package com.example.my_blockchain.model.Response;
+package com.example.my_blockchain.model.response;
 
 import java.util.List;
 
-import com.example.my_blockchain.model.Entity.Enum.WalletType;
-import com.example.my_blockchain.model.Entity.UDT.Transaction;
-
-import lombok.*;
-
-@Data
-@Getter @Setter
-@Builder
-public class WalletResponse {
-    public String address;
-    public String secret;
-    public WalletType wallet_type;
-    public List<Transaction> transactions;
+import com.example.my_blockchain.model.entity.Enum.WalletType;
+import com.example.my_blockchain.model.entity.UDT.Transaction;
+ 
+public record WalletResponse (
+    String address,
+    String secret,
+    WalletType wallet_type,
+    List<Transaction> transactions
+){
+    
 }

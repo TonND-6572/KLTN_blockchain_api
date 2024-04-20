@@ -1,4 +1,4 @@
-package com.example.my_blockchain.Util;
+package com.example.my_blockchain.util;
 
 public class Util {
     public static byte[] concatenateByteArrays(byte[] array1, byte[] array2) {

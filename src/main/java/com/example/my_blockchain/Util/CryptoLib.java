@@ -1,4 +1,4 @@
-package com.example.my_blockchain.Util;
+package com.example.my_blockchain.util;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;

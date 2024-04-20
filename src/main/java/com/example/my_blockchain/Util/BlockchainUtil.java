@@ -1,5 +1,6 @@
-package com.example.my_blockchain.Util;
+package com.example.my_blockchain.util;
 
+import java.nio.ByteBuffer;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
@@ -20,6 +21,8 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
+
+import com.datastax.oss.driver.api.core.data.ByteUtils;
 public class BlockchainUtil {
     public static String getStringFromKey(Key key) {
         return CryptoLib.Encoded(key.getEncoded());
@@ -100,7 +103,7 @@ public class BlockchainUtil {
      * @param data
      * @return realSig
      */
-    public static byte[] applySignature(PrivateKey privateKey, String data) {
+    public static ByteBuffer applySignature(PrivateKey privateKey, String data) {
         Signature signature;
         byte[] realSig;
         try {
@@ -112,7 +115,7 @@ public class BlockchainUtil {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return realSig;
+        return ByteUtils.fromHexString(ByteUtils.toHexString(realSig));
     }
 
     /**
@@ -122,12 +125,12 @@ public class BlockchainUtil {
      * @param signature
      * @return boolean
      */
-    public static boolean verifySignature(PublicKey publicKey, String data, byte[] signature) {
+    public static boolean verifySignature(PublicKey publicKey, String data, ByteBuffer signature) {
         try {
             Signature ecdsaVerify = Signature.getInstance("ECDSA", "BC");
             ecdsaVerify.initVerify(publicKey);
             ecdsaVerify.update(data.getBytes());
-            return ecdsaVerify.verify(signature);
+            return ecdsaVerify.verify(ByteUtils.getArray(signature));
         }catch(Exception e) {
             throw new RuntimeException(e);
         }

@@ -1,4 +1,4 @@
-package com.example.my_blockchain.model.Request;
+package com.example.my_blockchain.model.request;
 
 import lombok.*;
 

@@ -6,6 +6,7 @@ spring:
         port: 9042
         contact-points: localhost
         local-datacenter: datacenter1
+        schema-action: none
     rabbitmq:
         host: ${RABBITMQ_HOST:localhost}
         port: ${RABBITMQ_PORT:5672}

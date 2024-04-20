@@ -6,8 +6,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import com.example.my_blockchain.consumer.dto.WalletDTO;
-import com.example.my_blockchain.model.Entity.Wallet;
-import com.example.my_blockchain.model.Response.WalletResponse;
+import com.example.my_blockchain.model.entity.Wallet;
+import com.example.my_blockchain.model.response.WalletResponse;
 
 @Mapper(componentModel = "spring")
 public interface WalletMapper {

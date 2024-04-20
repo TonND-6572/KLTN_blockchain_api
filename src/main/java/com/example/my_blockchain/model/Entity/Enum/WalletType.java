@@ -1,4 +1,4 @@
-package com.example.my_blockchain.model.Entity.Enum;
+package com.example.my_blockchain.model.entity.Enum;
 
 import lombok.Getter;
 
