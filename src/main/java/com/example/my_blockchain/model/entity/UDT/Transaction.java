@@ -3,6 +3,7 @@ package com.example.my_blockchain.model.entity.UDT;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -32,10 +33,10 @@ public class Transaction implements Serializable{
     @CreatedDate
     @Column(value="created_time", isStatic = true)
     @Builder.Default
-    private Date created_time = new Date();
+    private LocalDateTime created_time = LocalDateTime.now();
 
     @Frozen
     private Input input;
     @Frozen
-    private Output outputs;
+    private List<Output> outputs;
 }

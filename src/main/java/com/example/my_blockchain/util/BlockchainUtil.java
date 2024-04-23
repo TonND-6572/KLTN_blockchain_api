@@ -13,7 +13,12 @@ import java.security.spec.EncodedKeySpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 import java.security.Signature;
 
 import javax.crypto.BadPaddingException;
@@ -23,6 +28,8 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 
 import com.datastax.oss.driver.api.core.data.ByteUtils;
+import com.example.my_blockchain.model.entity.Blockchain;
+import com.example.my_blockchain.model.entity.UDT.Transaction;
 public class BlockchainUtil {
     public static String getStringFromKey(Key key) {
         return CryptoLib.Encoded(key.getEncoded());
@@ -134,5 +141,34 @@ public class BlockchainUtil {
         }catch(Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static UUID generateUUID() {
+        return UUID.randomUUID();
+    }
+
+    /**
+     * Create genesis block
+     * @return Block
+     */
+    public static Blockchain genesis() {
+        LocalDateTime timeStamp = LocalDateTime.now();
+        String lastHash = "";
+        int difficulty = Configuration.DIFFICULTY;
+        long nonce = 0;
+        List<Transaction> transactions = new ArrayList<>();
+        String merkleRoot = "";
+        String hash = Blockchain.calculateHash(Timestamp.valueOf(timeStamp).getTime(), lastHash, difficulty, nonce, merkleRoot);
+
+        return new Blockchain(timeStamp, lastHash, hash, nonce, difficulty, transactions, merkleRoot);
+    }
+
+
+    public static String getMerkleRoot(List<Transaction> transactions) {
+        String[] txArrays = new String[transactions.size()];
+        for (int i = 0; i < transactions.size(); i++) {
+             txArrays[i]= transactions.get(i).getId().toString();
+        }
+        return new MerkleTree(txArrays).getRoot().getHash();
     }
 }
