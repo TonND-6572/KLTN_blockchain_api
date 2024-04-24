@@ -29,6 +29,7 @@ public class Wallet {
     @PrimaryKey
     private String address;
     
+    private String code;
     private String secret;
     private String salt_iv;
     private WalletType wallet_type;
