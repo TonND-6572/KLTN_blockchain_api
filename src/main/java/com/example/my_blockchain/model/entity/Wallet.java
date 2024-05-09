@@ -1,34 +1,46 @@
-package com.example.my_blockchain.model.Entity;
+package com.example.my_blockchain.model.entity;
 
+import java.nio.ByteBuffer;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
-import java.security.Signature;
+
 import java.security.spec.ECGenParameterSpec;
 import java.util.List;
 
 import org.springframework.data.annotation.Transient;
-import org.springframework.data.cassandra.core.mapping.PrimaryKey;
+import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
+import org.springframework.data.cassandra.core.mapping.Column;
+import org.springframework.data.cassandra.core.mapping.Frozen;
+// import org.springframework.data.cassandra.core.mapping.PrimaryKey;
+import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 import org.springframework.data.cassandra.core.mapping.Table;
 
-import com.example.my_blockchain.Util.BlockchainUtil;
+import com.example.my_blockchain.model.entity.Enum.WalletType;
+import com.example.my_blockchain.model.entity.UDT.Transaction;
+import com.example.my_blockchain.util.BlockchainUtil;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@Getter @Setter
+@Data
 @AllArgsConstructor
 @Table(value = "wallet")
 public class Wallet {
-    @PrimaryKey
+    @PrimaryKeyColumn(name = "address", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
     private String address;
+    
+    @PrimaryKeyColumn(name = "wallet_type", ordinal = 1, type = PrimaryKeyType.CLUSTERED)
+    private WalletType wallet_type;
+
+    @PrimaryKeyColumn(name = "code", ordinal = 2, type = PrimaryKeyType.CLUSTERED)
+    private String code;
+
     private String secret;
     private String salt_iv;
 
+    @Frozen
     private List<Transaction> transactions;
 
     @Transient
@@ -37,19 +49,29 @@ public class Wallet {
     @Transient
     private PublicKey public_key;
 
-    public Wallet(){
-        this.genKeyPair();
+    public Wallet() {
+        genKeyPair();
     }
 
-    public Wallet(String address, String secret, String salt_iv, List<Transaction> transactions){
+    public Wallet(String address, String secret, String salt_iv, WalletType wallet_type, List<Transaction> transactions){
         this.address = address;
         this.secret = secret;
         this.salt_iv = salt_iv;
+        this.wallet_type = wallet_type;
         this.transactions = transactions;
         try {
             this.private_key = BlockchainUtil.getPrivateKey(this.salt_iv, this.secret, this.address);
             this.public_key = BlockchainUtil.getPublicKey(this.address);
         } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void genKey(){
+        try {
+            this.private_key = BlockchainUtil.getPrivateKey(this.salt_iv, this.secret, this.address);
+            this.public_key = BlockchainUtil.getPublicKey(this.address);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -81,42 +103,5 @@ public class Wallet {
                 "\n transactions: " + String.valueOf(this.getTransactions()) + "\n";
     }
 
-    /**
-     * Using privateKey and input data to generate ECDSA signature using Elliptic Curve algorithm
-     * @param privateKey
-     * @param data
-     * @return realSig
-     */
-    public static byte[] applySignature(PrivateKey privateKey, String data) {
-        Signature signature;
-        byte[] realSig;
-        try {
-            signature = Signature.getInstance("ECDSA", "BC");
-            signature.initSign(privateKey);
-            byte[] strByte = data.getBytes();
-            signature.update(strByte);
-            realSig = signature.sign();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return realSig;
-    }
-
-    /**
-     * Verify the signature is valid or not
-     * @param publicKey
-     * @param data
-     * @param signature
-     * @return boolean
-     */
-    public static boolean verifySignature(PublicKey publicKey, String data, byte[] signature) {
-        try {
-            Signature ecdsaVerify = Signature.getInstance("ECDSA", "BC");
-            ecdsaVerify.initVerify(publicKey);
-            ecdsaVerify.update(data.getBytes());
-            return ecdsaVerify.verify(signature);
-        }catch(Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    
 }
