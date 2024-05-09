@@ -1,10 +1,14 @@
 package com.example.my_blockchain.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.datastax.oss.driver.shaded.guava.common.base.Optional;
 import com.example.my_blockchain.model.entity.Blockchain;
@@ -14,22 +18,20 @@ import com.example.my_blockchain.model.mapper.BlockchainMapper;
 import com.example.my_blockchain.model.response.BlockchainResponse;
 import com.example.my_blockchain.repo.BlockchainRepository;
 import com.example.my_blockchain.service.BlockchainService;
+import com.example.my_blockchain.service.TransactionService;
 import com.example.my_blockchain.util.BlockchainUtil;
 
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class BlockchainServiceImpl implements BlockchainService {
-
+@RequiredArgsConstructor
+public class BlockchainServiceImpl implements BlockchainService, ApplicationRunner{
+    private final TransactionService transactionService;
     private final BlockchainRepository blockchainRepository;
     private final BlockchainMapper blockchainMapper;
-
-    public BlockchainServiceImpl(BlockchainRepository blockchainRepository, BlockchainMapper blockchainMapper) {
-        this.blockchainRepository = blockchainRepository;
-        this.blockchainMapper = blockchainMapper;
-    }
 
     @Override
     public BlockchainResponse getBlock(BlockchainKey uuid) {
@@ -42,9 +44,15 @@ public class BlockchainServiceImpl implements BlockchainService {
     }
 
     @Override
+    @Transactional
     public BlockchainResponse createBlock(Blockchain block) {
-        blockchainRepository.save(block);
-        
+        try {
+            blockchainRepository.save(block);
+            transactionService.clearTransactionPool(block.getTransactions());
+
+        } catch (Exception e) {
+            log.error("{}", e);
+        }
         return blockchainMapper.toResponse(block);
     }
 
@@ -58,11 +66,47 @@ public class BlockchainServiceImpl implements BlockchainService {
 
     @Override
     @Async
-    public BlockchainResponse startMine(List<Transaction> transactions) {
-        Blockchain last_block = blockchainRepository.findLastBlock();
-        Blockchain block = Blockchain.mineBlock(last_block, transactions);
+    public BlockchainResponse startMine() {
+        List<Transaction> transactions = transactionService.getTransactions();
+        return mine(transactions);
+    }
 
+    @Override
+    @Async
+    public BlockchainResponse mine(List<Transaction> transactions) {
+        List<Transaction> validTransactions = new ArrayList<>();
+
+        for (Transaction transaction : transactions) {
+            log.info("{}", transaction);
+
+            if (transactionService.verifyTransaction(transaction)){
+                validTransactions.add(transaction);
+            }
+        }
+
+        Blockchain last_block = blockchainRepository.findLastBlock();
+        Blockchain block = Blockchain.mineBlock(last_block, validTransactions);
         
         return createBlock(block);
+    }
+
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+        log.info("Create genesis block of there are none in the database : {}", 
+            args.getOptionNames());
+        
+        genesisBlock();
+    }
+
+    public void genesisBlock() {
+        List<Blockchain> blocks = blockchainRepository.findAll();
+        if (blocks.size() == 0) {
+            Blockchain block = BlockchainUtil.genesis();
+            log.info(block.toString());
+            blockchainRepository.save(block);
+            log.info("Genesis block created");
+            return;
+        }
+        log.info("There is already a genesis block");
     }
 }

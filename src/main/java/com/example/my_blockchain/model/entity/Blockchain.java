@@ -22,7 +22,6 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Table(value="blockchain_by_year") //change blockchain -> blockchain_by_year (Cuz cassandra sorting suck :DDD)
 public class Blockchain {
     @PrimaryKey
@@ -111,5 +110,9 @@ public class Blockchain {
         int difficulty = lastBlock.getDifficulty();
         difficulty = Timestamp.valueOf(lastBlock.getBk().getCreated_time()).getTime() + Configuration.MINE_RATE > currentTime ? ++difficulty : --difficulty;
         return difficulty < Configuration.MIN_DIFFICULTY ? Configuration.MIN_DIFFICULTY : difficulty;
+    }
+
+    public String toString() {
+        return bk.toString();
     }
 }

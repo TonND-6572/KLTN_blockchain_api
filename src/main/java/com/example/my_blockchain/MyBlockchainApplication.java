@@ -4,6 +4,11 @@ import java.security.Security;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+
+import com.example.my_blockchain.service.BlockchainService;
+import com.example.my_blockchain.service.impl.BlockchainServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 

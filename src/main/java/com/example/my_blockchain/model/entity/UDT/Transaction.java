@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.cassandra.core.mapping.CassandraType;
 import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.Frozen;
@@ -17,26 +18,31 @@ import com.datastax.oss.driver.api.core.uuid.Uuids;
 import jakarta.annotation.Generated;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-// @NoArgsConstructor
+@NoArgsConstructor
 @Builder
 @UserDefinedType(value = "udt_transaction")
 public class Transaction implements Serializable{
-    @CassandraType(type = CassandraType.Name.UUID)
-    @Builder.Default
-    private UUID id = Uuids.random();
+    @Id
+    private Long id;
     
     @CreatedDate
     @Column(value="created_time", isStatic = true)
-    @Builder.Default
+    @Default
     private LocalDateTime created_time = LocalDateTime.now();
 
     @Frozen
     private Input input;
     @Frozen
     private List<Output> outputs;
+
+    public String toString(){
+        return input.toString() + outputs.toString() + created_time.toString();
+    }
+
 }

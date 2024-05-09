@@ -22,14 +22,21 @@ import lombok.*;
 @PrimaryKeyClass
 @Data
 public class BlockchainKey implements Serializable{
-    @PrimaryKeyColumn(name = "id", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
+    @PrimaryKeyColumn(name = "id", ordinal = 2, type = PrimaryKeyType.PARTITIONED)
     @CassandraType(type = CassandraType.Name.UUID)
     private UUID uuid = BlockchainUtil.generateUUID();
     
     @PrimaryKeyColumn(name = "created_time", ordinal = 1, type = PrimaryKeyType.CLUSTERED, ordering = Ordering.DESCENDING)
     @CreatedDate
     private LocalDateTime created_time = LocalDateTime.now();
-
-    @PrimaryKeyColumn()
+    
+    @PrimaryKeyColumn(name = "year", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
     private Integer year = created_time.getYear();
+
+    public String toString(){
+        return 
+            "UUID: " + uuid.toString() + 
+            "\nYear: " + year +
+            "\nCreated Time: " + created_time;
+    }
 }

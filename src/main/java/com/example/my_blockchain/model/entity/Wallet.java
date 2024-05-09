@@ -11,9 +11,11 @@ import java.security.spec.ECGenParameterSpec;
 import java.util.List;
 
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
 import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.Frozen;
-import org.springframework.data.cassandra.core.mapping.PrimaryKey;
+// import org.springframework.data.cassandra.core.mapping.PrimaryKey;
+import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 import org.springframework.data.cassandra.core.mapping.Table;
 
 import com.example.my_blockchain.model.entity.Enum.WalletType;
@@ -26,13 +28,17 @@ import lombok.*;
 @AllArgsConstructor
 @Table(value = "wallet")
 public class Wallet {
-    @PrimaryKey
+    @PrimaryKeyColumn(name = "address", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
     private String address;
     
+    @PrimaryKeyColumn(name = "wallet_type", ordinal = 1, type = PrimaryKeyType.CLUSTERED)
+    private WalletType wallet_type;
+
+    @PrimaryKeyColumn(name = "code", ordinal = 2, type = PrimaryKeyType.CLUSTERED)
     private String code;
+
     private String secret;
     private String salt_iv;
-    private WalletType wallet_type;
 
     @Frozen
     private List<Transaction> transactions;

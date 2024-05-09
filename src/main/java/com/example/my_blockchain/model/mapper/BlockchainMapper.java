@@ -10,5 +10,6 @@ import com.example.my_blockchain.model.response.BlockchainResponse;
 public interface BlockchainMapper {
     @Mapping(source = "bk.uuid", target = "uuid")
     @Mapping(source = "bk.created_time", target = "created_time")
+    @Mapping(target = "transactions", ignore = true)
     BlockchainResponse toResponse(Blockchain blockchain);
 }

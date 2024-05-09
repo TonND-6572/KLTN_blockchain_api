@@ -1,5 +1,6 @@
 package com.example.my_blockchain.consumer;
 
+import com.example.my_blockchain.consumer.dto.TransactionEventDTO;
 import com.example.my_blockchain.consumer.dto.WalletDTO;
 import com.example.my_blockchain.model.mapper.WalletMapper;
 import com.example.my_blockchain.service.WalletService;

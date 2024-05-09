@@ -15,5 +15,6 @@ spring:
 
 rabbitmq:
     create-wallet-queue: ${CREATE_WALLET_QUEUE:"create-wallet-queue"}
+    create-transaction-queue: ${CREATE_TRANSACTION_QUEUE:"create-transaction-queue"}
 server:
     port: 8081

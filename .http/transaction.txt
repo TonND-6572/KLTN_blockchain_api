@@ -1,0 +1,29 @@
+CreateTransactionDTO {
+    String SenderAddress; //Can be employee or user
+    String ReceiverAddress; //Set at END_USER if this is the last receiver and nullable
+    Orders orders;
+    OrderStatus status; //New status 
+}
+
+Orders {
+    Long order_id;
+    LocalDateTime created_at;
+    String created_by;
+    float total_weight;
+    float total_price;
+    String note;
+    OrderStatus status; // Old status
+    List<Item_attribute> items;
+}
+
+Item_attribute {
+    Long item_id;
+    String name;
+    Integer quantity;
+    Integer unit_price;
+    Float weight;
+    Float length;
+    Float height;
+    Float width;
+    String item_category;
+}

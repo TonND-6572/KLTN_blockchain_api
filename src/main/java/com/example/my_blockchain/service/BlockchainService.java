@@ -12,5 +12,6 @@ public interface BlockchainService {
     BlockchainResponse getLastBlock();
     List<BlockchainResponse> getAll();
     BlockchainResponse createBlock(Blockchain block);
-    BlockchainResponse startMine(List<Transaction> transactions);
+    BlockchainResponse mine(List<Transaction> transactions);
+    BlockchainResponse startMine();
 }

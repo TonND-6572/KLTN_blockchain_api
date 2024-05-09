@@ -34,11 +34,12 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public Wallet getWallet(String address) {
-        Wallet wallet = walletRepository.findById(address).orElse(null);
+        Wallet wallet = walletRepository.findByAddress(address);
         if (wallet != null) {
             wallet.genKey();
             return wallet;
         }
+        
         return null;
     }
 }

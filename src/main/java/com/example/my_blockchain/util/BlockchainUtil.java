@@ -110,7 +110,7 @@ public class BlockchainUtil {
      * @param data
      * @return realSig
      */
-    public static ByteBuffer applySignature(PrivateKey privateKey, String data) {
+    public static String applySignature(PrivateKey privateKey, String data) {
         Signature signature;
         byte[] realSig;
         try {
@@ -122,7 +122,7 @@ public class BlockchainUtil {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return ByteUtils.fromHexString(ByteUtils.toHexString(realSig));
+        return CryptoLib.Encoded(realSig);
     }
 
     /**
@@ -132,12 +132,13 @@ public class BlockchainUtil {
      * @param signature
      * @return boolean
      */
-    public static boolean verifySignature(PublicKey publicKey, String data, ByteBuffer signature) {
+    public static boolean verifySignature(PublicKey publicKey, String data, String signature) {
+        // signature.toString();
         try {
             Signature ecdsaVerify = Signature.getInstance("ECDSA", "BC");
             ecdsaVerify.initVerify(publicKey);
             ecdsaVerify.update(data.getBytes());
-            return ecdsaVerify.verify(ByteUtils.getArray(signature));
+            return ecdsaVerify.verify(CryptoLib.Decoded(signature));
         }catch(Exception e) {
             throw new RuntimeException(e);
         }
@@ -159,7 +160,7 @@ public class BlockchainUtil {
         List<Transaction> transactions = new ArrayList<>();
         String merkleRoot = "";
         String hash = Blockchain.calculateHash(Timestamp.valueOf(timeStamp).getTime(), lastHash, difficulty, nonce, merkleRoot);
-
+        
         return new Blockchain(timeStamp, lastHash, hash, nonce, difficulty, transactions, merkleRoot);
     }
 
