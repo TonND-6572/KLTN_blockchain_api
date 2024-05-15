@@ -3,12 +3,10 @@ package com.example.my_blockchain.service.impl;
 import java.security.PublicKey;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.my_blockchain.consumer.dto.OrderEvent;
 import com.example.my_blockchain.consumer.dto.TransactionEventDTO;
 import com.example.my_blockchain.model.entity.TransactionPool;
 import com.example.my_blockchain.model.entity.Wallet;

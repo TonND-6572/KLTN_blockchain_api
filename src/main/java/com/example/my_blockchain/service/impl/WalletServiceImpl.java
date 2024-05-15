@@ -1,8 +1,5 @@
 package com.example.my_blockchain.service.impl;
 
-
-import java.util.Optional;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

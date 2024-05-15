@@ -1,12 +1,10 @@
 package com.example.my_blockchain.model.entity.UDT;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.UserDefinedType;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import com.example.my_blockchain.model.entity.Enum.OrderStatus;
 

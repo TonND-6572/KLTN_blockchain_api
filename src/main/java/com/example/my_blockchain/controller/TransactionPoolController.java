@@ -4,30 +4,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.my_blockchain.model.entity.TransactionPool;
 import com.example.my_blockchain.model.entity.Wallet;
-import com.example.my_blockchain.model.entity.Enum.OrderStatus;
 import com.example.my_blockchain.model.entity.UDT.Input;
-import com.example.my_blockchain.model.entity.UDT.Item_attribute;
-import com.example.my_blockchain.model.entity.UDT.Order;
-import com.example.my_blockchain.model.entity.UDT.Output;
 import com.example.my_blockchain.model.entity.UDT.Transaction;
 import com.example.my_blockchain.repo.TransactionPoolRepository;
-import com.example.my_blockchain.service.TransactionService;
 import com.example.my_blockchain.service.WalletService;
 import com.example.my_blockchain.util.BlockchainUtil;
-import com.example.my_blockchain.util.Util;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.management.RuntimeErrorException;
 
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,9 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RestController
 @RequestMapping("/api-blockchain/transaction-pool")
 @RequiredArgsConstructor
-@Slf4j
 public class TransactionPoolController {
-    private final TransactionService transactionService;
     private final TransactionPoolRepository transactionPoolRepository;
     private final WalletService walletService;
 
@@ -68,9 +51,6 @@ public class TransactionPoolController {
 
     @GetMapping("/test2")
     public Boolean test2() throws NotFoundException {
-        String address = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEqqeoAUaE0ViLB0D4GUanYCUqCeu9bR4TDWt6rtNyrfpXW+K9+9m3WP1t9E3lL8hCTcFlin9GjyzQWhr6GFuHCQ==";
-        
-
         TransactionPool temp = transactionPoolRepository.findById(1L)
             .orElseThrow(() -> new NotFoundException());
         Wallet wallet = walletService.getWallet(temp.getTransaction().getInput().getAddress());

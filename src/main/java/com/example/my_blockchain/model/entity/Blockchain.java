@@ -3,9 +3,6 @@ package com.example.my_blockchain.model.entity;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
-
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
@@ -14,7 +11,6 @@ import com.example.my_blockchain.model.entity.compositeKey.BlockchainKey;
 import com.example.my_blockchain.util.BlockchainUtil;
 import com.example.my_blockchain.util.Configuration;
 import com.example.my_blockchain.util.CryptoLib;
-import com.example.my_blockchain.util.MerkleTree;
 
 import lombok.*;
 

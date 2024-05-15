@@ -6,9 +6,9 @@ public class Configuration {
     public static int MIN_DIFFICULTY = 2;
 
     public static class Time {
-        public static int SEC = 1000;
-        public static int MIN = 60 * SEC;
-        public static int HOUR = 60 * MIN;
-        public static int DAY = 24 * HOUR;
+        public static final int SEC = 1000;
+        public static final int MIN = 60 * SEC;
+        public static final int HOUR = 60 * MIN;
+        public static final int DAY = 24 * HOUR;
     }
 }
