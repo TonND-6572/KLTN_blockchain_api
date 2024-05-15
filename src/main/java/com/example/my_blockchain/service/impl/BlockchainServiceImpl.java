@@ -1,16 +1,19 @@
 package com.example.my_blockchain.service.impl;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.lang.reflect.Type;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.datastax.oss.driver.shaded.guava.common.base.Optional;
 import com.example.my_blockchain.model.entity.Blockchain;
 import com.example.my_blockchain.model.entity.UDT.Transaction;
 import com.example.my_blockchain.model.entity.compositeKey.BlockchainKey;
@@ -19,16 +22,22 @@ import com.example.my_blockchain.model.response.BlockchainResponse;
 import com.example.my_blockchain.repo.BlockchainRepository;
 import com.example.my_blockchain.service.BlockchainService;
 import com.example.my_blockchain.service.TransactionService;
-import com.example.my_blockchain.util.BlockchainUtil;
+import com.example.my_blockchain.util.LocalDateTimeDeserializer;
 
-import lombok.NoArgsConstructor;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class BlockchainServiceImpl implements BlockchainService, ApplicationRunner{
+public class BlockchainServiceImpl implements BlockchainService{
     private final TransactionService transactionService;
     private final BlockchainRepository blockchainRepository;
     private final BlockchainMapper blockchainMapper;
@@ -68,6 +77,9 @@ public class BlockchainServiceImpl implements BlockchainService, ApplicationRunn
     @Async
     public BlockchainResponse startMine() {
         List<Transaction> transactions = transactionService.getTransactions();
+        if (transactions.size() == 0){
+            return null;
+        }
         return mine(transactions);
     }
 
@@ -91,22 +103,23 @@ public class BlockchainServiceImpl implements BlockchainService, ApplicationRunn
     }
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
-        log.info("Create genesis block of there are none in the database : {}", 
-            args.getOptionNames());
-        
-        genesisBlock();
-    }
-
-    public void genesisBlock() {
+    public void toJson() {
         List<Blockchain> blocks = blockchainRepository.findAll();
-        if (blocks.size() == 0) {
-            Blockchain block = BlockchainUtil.genesis();
-            log.info(block.toString());
-            blockchainRepository.save(block);
-            log.info("Genesis block created");
-            return;
+        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new JsonDeserializer<LocalDateTime>() {
+            @Override
+            public LocalDateTime deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+                Instant instant = Instant.ofEpochMilli(json.getAsJsonPrimitive().getAsLong());
+                return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+            }
+        }).create();
+
+
+        // Converts Java object to File
+        try (Writer writer = new FileWriter("blockchain.json")) {
+            gson.toJson(blocks, writer);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        log.info("There is already a genesis block");
+
     }
 }

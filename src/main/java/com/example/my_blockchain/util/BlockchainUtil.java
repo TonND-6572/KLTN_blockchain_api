@@ -1,6 +1,5 @@
 package com.example.my_blockchain.util;
 
-import java.nio.ByteBuffer;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
@@ -27,7 +26,6 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 
-import com.datastax.oss.driver.api.core.data.ByteUtils;
 import com.example.my_blockchain.model.entity.Blockchain;
 import com.example.my_blockchain.model.entity.UDT.Transaction;
 public class BlockchainUtil {

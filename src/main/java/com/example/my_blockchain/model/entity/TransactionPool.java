@@ -1,6 +1,5 @@
 package com.example.my_blockchain.model.entity;
 
-import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
@@ -11,7 +10,6 @@ import org.springframework.data.cassandra.core.mapping.Table;
 import com.example.my_blockchain.model.entity.UDT.Transaction;
 
 import lombok.*;
-import lombok.Builder.Default;
 
 @Data
 @Builder

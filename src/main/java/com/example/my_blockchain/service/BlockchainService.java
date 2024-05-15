@@ -14,4 +14,5 @@ public interface BlockchainService {
     BlockchainResponse createBlock(Blockchain block);
     BlockchainResponse mine(List<Transaction> transactions);
     BlockchainResponse startMine();
+    void toJson();
 }

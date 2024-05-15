@@ -3,8 +3,6 @@ package com.example.my_blockchain.model.entity.compositeKey;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -14,7 +12,6 @@ import org.springframework.data.cassandra.core.mapping.CassandraType;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyClass;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 
-import com.datastax.oss.driver.api.core.uuid.Uuids;
 import com.example.my_blockchain.util.BlockchainUtil;
 
 import lombok.*;
