@@ -34,7 +34,7 @@ public class Blockchain {
 
     public Blockchain(LocalDateTime timeStamp, String lastHash, String hash, Long nonce, Integer difficulty, List<Transaction> transactions, String merkleRoot){
         BlockchainKey bk = new BlockchainKey();
-        bk.setCreated_time(timeStamp);
+        bk.setCreatedTime(timeStamp);
         bk.setUuid(BlockchainUtil.generateUUID());
         bk.setYear(timeStamp.getYear());
         this.bk = bk;
@@ -52,7 +52,7 @@ public class Blockchain {
     public void caclulateHash() {
         this.hash =  CryptoLib.getSHA256Hash(
                 this.bk.getUuid().toString() 
-                + Long.toString(Timestamp.valueOf(this.bk.getCreated_time()).getTime()) 
+                + Long.toString(Timestamp.valueOf(this.bk.getCreatedTime()).getTime()) 
                 + Long.toString(this.nonce)
                 + this.merkle_root
                 + this.previous_hash
@@ -63,7 +63,7 @@ public class Blockchain {
     /*
      * Calculate the hash of the block
      */
-    public static String calculateHash(Long timeStamp, String previous_hash, int difficulty, Long nonce, String merkle_root) {
+    public static String calculateHash(Long timeStamp, String previous_hash, Integer difficulty, Long nonce, String merkle_root) {
         return CryptoLib.getSHA256Hash(
                 timeStamp.toString()
                 + previous_hash
@@ -71,6 +71,15 @@ public class Blockchain {
                 + nonce
                 + merkle_root
             );
+    }
+
+    public static String calculateHash(Blockchain block){
+        return calculateHash(
+             Timestamp.valueOf(block.getBk().getCreatedTime()).getTime(),
+             block.getPrevious_hash(), 
+             block.getDifficulty(), 
+             block.getNonce(), 
+             block.getMerkle_root());
     }
 
     /**
@@ -83,7 +92,7 @@ public class Blockchain {
         LocalDateTime timeStamp = LocalDateTime.now();
         long nonce = 0;
         String lastHash = lastBlock.getHash();
-        int difficulty = lastBlock.getDifficulty();
+        Integer difficulty = lastBlock.getDifficulty();
         String merkleRoot = BlockchainUtil.getMerkleRoot(transactions);
         String hash = "";
         while (hash.length() < difficulty || !hash.substring(0, difficulty).equals(new String(new char[difficulty]).replace('\0', '0'))) {
@@ -96,7 +105,8 @@ public class Blockchain {
     }
 
     /**
-     * Adjust mining difficulty according to control the mining speed
+     * Adjust mining difficulty according to control the mining speed 
+     * If the mining speed is within mine rate then increase the difficulty
      * @param lastBlock
      * @param currentTime
      * @return
@@ -104,7 +114,7 @@ public class Blockchain {
     //TODO: Fix the hardcoded mine rate
     public static int adjustDifficulty(Blockchain lastBlock, long currentTime) {
         int difficulty = lastBlock.getDifficulty();
-        difficulty = Timestamp.valueOf(lastBlock.getBk().getCreated_time()).getTime() + Configuration.MINE_RATE > currentTime ? ++difficulty : --difficulty;
+        difficulty = Timestamp.valueOf(lastBlock.getBk().getCreatedTime()).getTime() + Configuration.MINE_RATE > currentTime ? ++difficulty : --difficulty;
         return difficulty < Configuration.MIN_DIFFICULTY ? Configuration.MIN_DIFFICULTY : difficulty;
     }
 

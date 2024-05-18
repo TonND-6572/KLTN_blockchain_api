@@ -13,6 +13,7 @@
 -- DROP TABLE wallet;
 -- DROP TABLE blockchain_by_year;
 -- DROP TABLE transaction_pool;
+-- DROP TABLE order_tracking;
 
 -- truncate table wallet;
 -- truncate TABLE blockchain_by_year;
@@ -27,9 +28,6 @@ CREATE TYPE IF NOT EXISTS udt_item_attribute
         quantity      INT,
         unit_price    INT,
         weight        FLOAT,
-        length        FLOAT,
-        height        FLOAT,
-        width         FLOAT,
         item_category TEXT
     );
 
@@ -103,15 +101,15 @@ CREATE TABLE blockchain_by_year
 ) WITH CLUSTERING ORDER BY (created_time DESC);
 
 CREATE TABLE order_tracking(
-    order_id INT,
+    order_id BIGINT,
     status TEXT,
     sender TEXT,
     receiver TEXT,
+    receiver_name TEXT,
     created_time TIMESTAMP,
 
-    PRIMARY KEY ((order_id, status), created_time)
+    PRIMARY KEY ((order_id), created_time)
 )WITH CLUSTERING ORDER BY (created_time DESC);
-
 
 -- CREATE TABLE transaction_in_block_by_order_id
 -- (

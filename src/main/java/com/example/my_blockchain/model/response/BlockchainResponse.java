@@ -9,7 +9,7 @@ import com.example.my_blockchain.model.entity.UDT.Transaction;
 
 public record BlockchainResponse(
     UUID uuid,
-    LocalDateTime created_time,
+    LocalDateTime createdTime,
     String hash,
     Long nonce,
     Integer difficulty,

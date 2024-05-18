@@ -1,12 +1,13 @@
 package com.example.my_blockchain.model.entity.Enum;
 
 public enum OrderStatus {
-    DRAFT,
-    CREATED,
-    SENDED,
-    TRANSPORTING,
-    DELIVERING,
-    DELIVERED,
-    CANCLING,
-    REFUNDED,
+    DRAFT, 
+    CREATED, 
+    RECEIVED, 
+    TRANSPORTING, 
+    TRANSPORTED, 
+    DELIVERING, 
+    DELIVERED, 
+    CANCELED, 
+    REFUNDED
 }

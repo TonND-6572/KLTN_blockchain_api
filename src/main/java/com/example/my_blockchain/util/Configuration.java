@@ -1,14 +1,16 @@
 package com.example.my_blockchain.util;
 
 public class Configuration {
-    public static Integer DIFFICULTY = 4;
-    public static int MINE_RATE = 20 * Time.SEC;
-    public static int MIN_DIFFICULTY = 2;
+    public final static Integer DIFFICULTY = 5;
+    public final static int MINING_SCHEDULE = 1 * Time.MIN;
+    public final static int INITIAL_DELAY = 1 * Time.MIN;
+    public final static int MINE_RATE = MINING_SCHEDULE +  20 * Time.SEC;
+    public final static int MIN_DIFFICULTY = 3;
 
     public static class Time {
-        public static final int SEC = 1000;
-        public static final int MIN = 60 * SEC;
-        public static final int HOUR = 60 * MIN;
-        public static final int DAY = 24 * HOUR;
+        public final static int SEC = 1000;
+        public final static int MIN = 60 * SEC;
+        public final static int HOUR = 60 * MIN;
+        public final static int DAY = 24 * HOUR;
     }
 }

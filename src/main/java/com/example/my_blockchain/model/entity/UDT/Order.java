@@ -29,5 +29,5 @@ public class Order {
     String note;
     
     OrderStatus status;
-    List<Item_attribute> items;
+    List<ItemAttribute> items;
 }
