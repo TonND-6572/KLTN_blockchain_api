@@ -5,6 +5,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.example.my_blockchain.model.response.BlockchainResponse;
+import com.example.my_blockchain.repo.BlockchainRepository;
 import com.example.my_blockchain.util.Configuration;
 
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class ScheduledTask {
+    private final BlockchainRepository blockchainRepository;
     private final BlockchainService blockchainService;
 
     /*
@@ -21,13 +23,23 @@ public class ScheduledTask {
      * Delay chạy lần đầu 1 phút
      */
     @Async
-    @Scheduled(fixedDelay = Configuration.Time.MIN*2, initialDelay = Configuration.Time.MIN*1)
+    @Scheduled(fixedDelay = Configuration.MINING_SCHEDULE, initialDelay = Configuration.INITIAL_DELAY)
     public void scheduledMine(){
-        log.info("----- start mining ----");
-        BlockchainResponse block = blockchainService.startMine();
-        if (block == null){
-            log.info("No transactions to mine");
+        try{
+            log.info("----- start mining ----");
+            if (blockchainRepository.findAll().size() > 0){
+                BlockchainResponse block = blockchainService.startMine();
+                if (block == null){
+                    log.info("No transactions to mine");
+                }
+            }
+            else{
+                log.info("there is no genesis block");
+            }
+            log.info("----- finish mining ----");
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        log.info("----- finish mining ----");
+        
     }
 }

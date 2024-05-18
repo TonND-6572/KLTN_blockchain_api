@@ -4,6 +4,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Type;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -15,13 +16,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.my_blockchain.model.entity.Blockchain;
+import com.example.my_blockchain.model.entity.OrderTracking;
+import com.example.my_blockchain.model.entity.UDT.Output;
 import com.example.my_blockchain.model.entity.UDT.Transaction;
 import com.example.my_blockchain.model.entity.compositeKey.BlockchainKey;
 import com.example.my_blockchain.model.mapper.BlockchainMapper;
 import com.example.my_blockchain.model.response.BlockchainResponse;
 import com.example.my_blockchain.repo.BlockchainRepository;
+import com.example.my_blockchain.repo.OrderTrackingRepository;
 import com.example.my_blockchain.service.BlockchainService;
 import com.example.my_blockchain.service.TransactionService;
+import com.example.my_blockchain.service.WalletService;
+import com.example.my_blockchain.util.BlockchainUtil;
 import com.example.my_blockchain.util.LocalDateTimeDeserializer;
 
 import com.google.gson.Gson;
@@ -39,7 +45,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class BlockchainServiceImpl implements BlockchainService{
     private final TransactionService transactionService;
+    private final WalletService walletService;
+
     private final BlockchainRepository blockchainRepository;
+    private final OrderTrackingRepository orderTrackingRepository;
+
     private final BlockchainMapper blockchainMapper;
 
     @Override
@@ -59,6 +69,24 @@ public class BlockchainServiceImpl implements BlockchainService{
             blockchainRepository.save(block);
             transactionService.clearTransactionPool(block.getTransactions());
 
+            for (Transaction transaction : block.getTransactions()) {
+                String sender = transaction.getInput().getAddress();
+                for (Output output : transaction.getOutputs()) {
+                    OrderTracking orderTracking = OrderTracking.builder()
+                        .orderId(output.getOrders().getOrder_id())
+                        .createdTime(output.getOrders().getCreated_at())
+                        .status(output.getTransaction_status())
+                        .sender(sender)
+                        .receiver(output.getAddress())
+                        .receiverName(output.getReceiverName())
+                        .build();
+                    
+                    orderTrackingRepository.save(orderTracking);
+                    walletService.addTransaction(output.getAddress(), transaction);
+                }
+
+                walletService.addTransaction(sender, transaction);
+            }
         } catch (Exception e) {
             log.error("{}", e);
         }
@@ -83,7 +111,6 @@ public class BlockchainServiceImpl implements BlockchainService{
         return mine(transactions);
     }
 
-    @Override
     @Async
     public BlockchainResponse mine(List<Transaction> transactions) {
         List<Transaction> validTransactions = new ArrayList<>();
@@ -121,5 +148,44 @@ public class BlockchainServiceImpl implements BlockchainService{
             throw new RuntimeException(e);
         }
 
+    }
+
+    @Override
+    public Boolean checkBlockchain() {
+        List<Blockchain> blockchain = blockchainRepository.findAll();
+        String previousHash = "";
+        for (Blockchain block : blockchain) {
+            if (!checkBlock(previousHash, block)){
+                log.info(block.toString());
+                return false;
+            }
+            previousHash = block.getHash();
+        }
+        return true;
+    }
+
+    private Boolean checkBlock(String previousHash, Blockchain block){
+        // check prev_hash
+        if (!previousHash.equals(block.getPrevious_hash())){
+            return false;
+        }
+
+        // checking hash with difficulty
+        if (!block.getHash().substring(0, block.getDifficulty())
+            .equals(new String(new char[block.getDifficulty()]).replace('\0', '0'))){
+            return false;
+        }   
+
+        // checking merkle root if block not a genesis block
+        if (block.getNonce() > 0 && !BlockchainUtil.getMerkleRoot(block.getTransactions()).equals(block.getMerkle_root())){
+            return false;
+        }
+
+        // checking hash
+        if (!Blockchain.calculateHash(block).equals(block.getHash())){
+            return false;
+        }
+
+        return true;
     }
 }

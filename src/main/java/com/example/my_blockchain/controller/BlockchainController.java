@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.my_blockchain.model.entity.Wallet;
 import com.example.my_blockchain.model.entity.Enum.OrderStatus;
 import com.example.my_blockchain.model.entity.UDT.Input;
-import com.example.my_blockchain.model.entity.UDT.Item_attribute;
+import com.example.my_blockchain.model.entity.UDT.ItemAttribute;
 import com.example.my_blockchain.model.entity.UDT.Order;
 import com.example.my_blockchain.model.entity.UDT.Output;
 import com.example.my_blockchain.model.entity.UDT.Transaction;

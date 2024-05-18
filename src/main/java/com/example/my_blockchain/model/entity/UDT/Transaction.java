@@ -28,7 +28,7 @@ public class Transaction implements Serializable{
     @CreatedDate
     @Column(value="created_time", isStatic = true)
     @Default
-    private LocalDateTime created_time = LocalDateTime.now();
+    private LocalDateTime createdTime = LocalDateTime.now();
 
     @Frozen
     private Input input;
@@ -36,7 +36,7 @@ public class Transaction implements Serializable{
     private List<Output> outputs;
 
     public String toString(){
-        return input.toString() + outputs.toString() + created_time.toString();
+        return input.toString() + outputs.toString() + createdTime.toString();
     }
 
 }

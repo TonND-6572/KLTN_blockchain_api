@@ -13,17 +13,14 @@ Orders {
     float total_price;
     String note;
     OrderStatus status; // Old status
-    List<Item_attribute> items;
+    List<ItemAttribute> items;
 }
 
-Item_attribute {
+ItemAttribute {
     Long item_id;
     String name;
     Integer quantity;
     Integer unit_price;
     Float weight;
-    Float length;
-    Float height;
-    Float width;
     String item_category;
 }

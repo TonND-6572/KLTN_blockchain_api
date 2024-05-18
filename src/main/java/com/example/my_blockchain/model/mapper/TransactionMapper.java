@@ -8,7 +8,7 @@ import org.mapstruct.Mapping;
 import com.example.my_blockchain.consumer.dto.ItemAttributeEvent;
 import com.example.my_blockchain.consumer.dto.OrderEvent;
 import com.example.my_blockchain.model.entity.TransactionPool;
-import com.example.my_blockchain.model.entity.UDT.Item_attribute;
+import com.example.my_blockchain.model.entity.UDT.ItemAttribute;
 import com.example.my_blockchain.model.entity.UDT.Order;
 import com.example.my_blockchain.model.entity.UDT.Transaction;
 
@@ -17,13 +17,13 @@ public interface TransactionMapper {
     @Mapping(target = "id", source = "transactionId")
     @Mapping(target = "input", source = "transaction.input")
     @Mapping(target = "outputs", source = "transaction.outputs")
-    @Mapping(target = "created_time", source = "transaction.created_time")
+    @Mapping(target = "createdTime", source = "transaction.createdTime")
     Transaction toTransaction(TransactionPool transactionPool);
 
     List<Transaction> toTransactions(List<TransactionPool> transactionPools);
 
-    @Mapping(target="item_id", source="id")
-    Item_attribute toItem_attribute(ItemAttributeEvent event);
+    @Mapping(target="itemId", source="id")
+    ItemAttribute toItemAttribute(ItemAttributeEvent event);
     
     @Mapping(target="created_at", ignore = true)
     Order toOrder(OrderEvent event);

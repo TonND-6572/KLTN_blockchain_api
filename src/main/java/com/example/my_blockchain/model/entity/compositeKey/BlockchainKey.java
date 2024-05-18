@@ -25,15 +25,15 @@ public class BlockchainKey implements Serializable{
     
     @PrimaryKeyColumn(name = "created_time", ordinal = 1, type = PrimaryKeyType.CLUSTERED, ordering = Ordering.DESCENDING)
     @CreatedDate
-    private LocalDateTime created_time = LocalDateTime.now();
+    private LocalDateTime createdTime = LocalDateTime.now();
     
     @PrimaryKeyColumn(name = "year", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
-    private Integer year = created_time.getYear();
+    private Integer year = createdTime.getYear();
 
     public String toString(){
         return 
             "UUID: " + uuid.toString() + 
             "\nYear: " + year +
-            "\nCreated Time: " + created_time;
+            "\nCreated Time: " + createdTime;
     }
 }

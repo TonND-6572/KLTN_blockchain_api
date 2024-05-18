@@ -166,7 +166,7 @@ public class BlockchainUtil {
     public static String getMerkleRoot(List<Transaction> transactions) {
         String[] txArrays = new String[transactions.size()];
         for (int i = 0; i < transactions.size(); i++) {
-             txArrays[i]= transactions.get(i).getId().toString();
+             txArrays[i]= transactions.toString();
         }
         return new MerkleTree(txArrays).getRoot().getHash();
     }

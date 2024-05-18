@@ -1,6 +1,7 @@
 package com.example.my_blockchain.model.entity.UDT;
 
 import org.springframework.data.cassandra.core.mapping.Column;
+import org.springframework.data.cassandra.core.mapping.Table;
 import org.springframework.data.cassandra.core.mapping.UserDefinedType;
 
 import lombok.*;
@@ -10,17 +11,15 @@ import lombok.*;
 @AllArgsConstructor @NoArgsConstructor
 @Builder 
 @ToString
-public class Item_attribute {
-    Long item_id;
+public class ItemAttribute {
+    @Column("item_id")
+    Long itemId;
     String name;
     Integer quantity;
 
     @Column("unit_price")
     Integer unitPrice;
     Float weight;
-    Float length;
-    Float height;
-    Float width;
     
     @Column("item_category")
     String itemCategory;
