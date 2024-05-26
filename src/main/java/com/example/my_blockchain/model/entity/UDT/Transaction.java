@@ -3,6 +3,7 @@ package com.example.my_blockchain.model.entity.UDT;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -23,7 +24,8 @@ import lombok.NoArgsConstructor;
 @UserDefinedType(value = "udt_transaction")
 public class Transaction implements Serializable{
     @Id
-    private Long id;
+    @Default
+    private UUID id = UUID.randomUUID();
     
     @CreatedDate
     @Column(value="created_time", isStatic = true)

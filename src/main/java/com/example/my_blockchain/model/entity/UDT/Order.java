@@ -24,6 +24,10 @@ public class Order {
     float totalWeight;
     @Column("total_price")
     float totalPrice;
+    @Column("sub_total")
+    float subTotal;
+    @Column("fee_paid")
+    float feePaid;
 
     @Column("notice")
     String note;

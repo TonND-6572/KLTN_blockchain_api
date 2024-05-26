@@ -11,7 +11,7 @@ public class TransactionEventDTO {
     private String senderAddress;
     private String receiverAddress;
     private String receiverName;
-    private Long transaction_id;
+    private Long transactionId;
     private OrderEvent orderEvent;
     private TransactionStatus status;
     private String createAt;

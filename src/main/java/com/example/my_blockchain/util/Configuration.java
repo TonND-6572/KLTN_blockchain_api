@@ -6,6 +6,7 @@ public class Configuration {
     public final static int INITIAL_DELAY = 1 * Time.MIN;
     public final static int MINE_RATE = MINING_SCHEDULE +  20 * Time.SEC;
     public final static int MIN_DIFFICULTY = 3;
+    public final static int MAX_TRANSACTION = 10;
 
     public static class Time {
         public final static int SEC = 1000;

@@ -3,6 +3,7 @@ package com.example.my_blockchain.service.impl;
 import java.security.PublicKey;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,58 +39,72 @@ public class TransactionServiceImpl implements TransactionService {
         if ((walletRepository.findByAddress(event.getSenderAddress()) == null)) {
             throw new RuntimeException("Wallet not found");
         }
-
         Input input = Input.builder()
             .address(event.getSenderAddress())
             .build();
-        //Output
 
+        //Output
         Order order = transactionMapper.toOrder(event.getOrderEvent());
         order.setCreated_at(Util.parseTime(event.getCreateAt()));
 
         Output output = Output.builder()
             .address(event.getReceiverAddress())
             .receiverName(event.getReceiverName())
-            .transaction_status(event.getStatus())
+            .transactionId(event.getTransactionId())
+            .transactionStatus(event.getStatus())
             .orders(order)
             .build();
-        //Transaction
 
-        return createTransaction(input, output, event.getTransaction_id());
+        //Transaction
+        return createTransaction(input, output);
     }
 
     @Override
     @Transactional
-    public TransactionPool createTransaction(Input input, Output outputs, Long transaction_id) {
-        Transaction transaction = Transaction.builder()
-            .id(transaction_id)
-            .input(input)
-            .outputs(Collections.singletonList(outputs))
-            .build();
+    public TransactionPool createTransaction(Input input, Output output) {
+        Optional<TransactionPool> optTransaction = transactionPoolRepository.findById(input.getAddress());
 
-        TransactionPool transactionPool = TransactionPool.builder()
-            .transactionId(transaction.getId())
-            .transaction(signTransaction(transaction))
+        Transaction transaction = Transaction.builder()
+            .input(input)
             .build();
+        
+        if (optTransaction.isPresent()) {
+            TransactionPool transactionPool = optTransaction.get();
+            transactionPool.transaction.getOutputs().add(output);
+            transaction.setOutputs(transactionPool.transaction.getOutputs());
+        } else {
+            transaction.setOutputs(Collections.singletonList(output));
+        }
+        
+        TransactionPool transactionPool = TransactionPool.builder()
+        .senderAddress(input.getAddress())
+        .transaction(signTransaction(transaction))
+        .build();
         
         return transactionPoolRepository.save(transactionPool);
     }
 
     @Override
     @Transactional
-    public TransactionPool createTransaction(Input input, List<Output> outputs, Long transaction_id) {
+    public TransactionPool createTransaction(Input input, List<Output> outputs) {
         Transaction transaction = Transaction.builder()
-            .id(transaction_id)
             .input(input)
             .outputs(outputs)
             .build();
 
         TransactionPool transactionPool = TransactionPool.builder()
-            .transactionId(transaction.getId())
+            .senderAddress(input.getAddress())
             .transaction(signTransaction(transaction))
             .build();
         
         return transactionPoolRepository.save(transactionPool);
+    }
+
+    @Override
+    @Transactional
+    public void createTransaction(List<Transaction> transactions){
+        List<TransactionPool> transactionPools = transactionMapper.toTransactionPools(transactions);
+        transactionPoolRepository.saveAll(transactionPools);
     }
 
     public Transaction signTransaction(Transaction transaction) {
@@ -120,7 +135,10 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     @Transactional
     public void clearTransactionPool(List<Transaction> transactions) {
-        transactionPoolRepository.deleteAllById(transactions.stream().map(Transaction::getId).toList());
+        transactionPoolRepository.deleteAllById(transactions.stream()
+                    .map(Transaction::getInput)
+                    .map(Input::getAddress)
+                    .toList());
     }
 
     @Override
