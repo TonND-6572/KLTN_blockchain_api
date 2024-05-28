@@ -1,145 +1,105 @@
------- DROP UDT ------
-
+-- ---- DROP TABLE ------
+-- DROP TABLE blockchain_by_year;
+-- DROP TABLE order_tracking;
+-- DROP TABLE transaction_pool;
+-- DROP TABLE wallet;
+--
+-- ---- DROP UDT ------
 -- drop type udt_transaction;
--- drop type udt_input;
 -- drop type udt_output;
+-- drop type udt_input;
 -- drop type udt_order;
 -- drop type udt_item_attribute;
 
------- DROP TABLE ------
--- -- DROP TABLE transaction_in_block_by_order_id;
--- -- DROP TABLE block_by_transaction_id;
--- -- DROP TABLE transaction;
--- DROP TABLE wallet;
--- DROP TABLE blockchain_by_year;
--- DROP TABLE transaction_pool;
--- DROP TABLE order_tracking;
-
--- truncate table wallet;
--- truncate TABLE blockchain_by_year;
-
--- CREATE KEYSPACE  IF NOT EXISTS transportation_blockchain WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'} AND durable_writes = true;
--- DROP KEYSPACE IF EXISTS transportation_blockchain;
-
-CREATE TYPE IF NOT EXISTS udt_item_attribute
+create type udt_input
     (
-        item_id       BIGINT,
-        name          TEXT,
-        quantity      INT,
-        unit_price    INT,
-        weight        FLOAT,
-        item_category TEXT
+        address   text,
+        signature text
     );
 
-CREATE TYPE IF NOT EXISTS udt_order
+create type udt_item_attribute
     (
-        order_id     BIGINT,
-        created_at   TIMESTAMP,
-        created_by   TEXT,
-        total_weight FLOAT,
-        total_price  FLOAT,
-        notice       TEXT,
-        status       TEXT,
-        items        LIST<FROZEN<udt_item_attribute>> // <item_attr>
+        item_id       bigint,
+        name          text,
+        quantity      int,
+        unit_price    int,
+        weight        float,
+        item_category text
     );
 
-CREATE TYPE IF NOT EXISTS udt_input
+create type udt_order
     (
-        address   TEXT,
-        signature TEXT
+        order_id     bigint,
+        created_at   timestamp,
+        created_by   text,
+        total_weight float,
+        total_price  float,
+        sub_total    float,
+        fee_paid     float,
+        notice       text,
+        status       text,
+        items        list<frozen<udt_item_attribute>>
     );
 
-CREATE TYPE IF NOT EXISTS udt_output
+create type udt_output
     (
-        address       TEXT,
-        receiver_name TEXT,
-        orders        FROZEN<udt_order>,
-        transaction_status  TEXT
+        address            text,
+        receiver_name      text,
+        transaction_id     bigint,
+        orders             frozen<udt_order>,
+        transaction_status text
     );
 
-CREATE TYPE IF NOT EXISTS udt_transaction
+create type udt_transaction
     (
-        id           BIGINT,
-        created_time TIMESTAMP,
-        input        FROZEN<udt_input>,
-        outputs      LIST<FROZEN<udt_output>>
+        id           UUID,
+        created_time timestamp,
+        input        frozen<udt_input>,
+        outputs      list<frozen<udt_output>>
     );
 
-CREATE TABLE wallet
+
+create table transportation_blockchain.blockchain_by_year
 (
-    code         TEXT,
-    address      TEXT,
-    wallet_type  TEXT,
-    secret       TEXT,
-    salt_iv      TEXT,
-    transactions LIST<FROZEN<udt_transaction>>,
+    year          int,
+    created_time  timestamp,
+    id            uuid,
+    difficulty    int,
+    hash          text,
+    merkle_root   text,
+    nonce         bigint,
+    previous_hash text,
+    transactions  list<frozen<udt_transaction>>,
+    primary key (year, created_time, id)
+)
+            with clustering order by (created_time desc, id asc);
 
-    PRIMARY KEY (address, wallet_type, code)
+create table transportation_blockchain.order_tracking
+(
+    order_id      bigint,
+    created_time  timestamp,
+    receiver      text,
+    receiver_name text,
+    sender        text,
+    status        text,
+    primary key (order_id, created_time)
+)
+            with clustering order by (created_time desc);
+
+create table transportation_blockchain.transaction_pool
+(
+    sender_address text primary key,
+    transaction    frozen<udt_transaction>
 );
 
-CREATE TABLE transaction_pool
+create table transportation_blockchain.wallet
 (
-    transaction_id BIGINT,
-    transaction    FROZEN<udt_transaction>,
-
-    PRIMARY KEY (transaction_id)
+    address      text,
+    wallet_type  text,
+    code         text,
+    salt_iv      text,
+    secret       text,
+    transactions list<frozen<udt_transaction>>,
+    primary key (address, wallet_type, code)
 );
 
-CREATE TABLE blockchain_by_year
-(
-    year          INT,
-    id            UUID,
-    created_time  TIMESTAMP,
-    hash          TEXT,
-    nonce         BIGINT,
-    difficulty    INT,
-    previous_hash TEXT,
-    merkle_root   TEXT,
-    transactions  LIST<FROZEN<udt_transaction>>,
-
-    PRIMARY KEY (year, created_time, id)
-) WITH CLUSTERING ORDER BY (created_time DESC);
-
-CREATE TABLE order_tracking(
-    order_id BIGINT,
-    status TEXT,
-    sender TEXT,
-    receiver TEXT,
-    receiver_name TEXT,
-    created_time TIMESTAMP,
-
-    PRIMARY KEY ((order_id), created_time)
-)WITH CLUSTERING ORDER BY (created_time DESC);
-
--- CREATE TABLE transaction_in_block_by_order_id
--- (
---     order_id        INT PRIMARY KEY,
---     transaction_ids MAP<TEXT, TEXT>,
--- ) WITH COMMENT = 'transaction in block';
-
--- CREATE TABLE block_by_transaction_id
--- (
---     transaction_id  uuid PRIMARY KEY,
---     blockchain_uuid TEXT
--- );
-
--- CREATE TABLE transaction
--- (
---     id           UUID,
---     created_time TIMESTAMP,
---     input        FROZEN<udt_input>,
---     outputs      LIST<FROZEN<udt_output>>,
---
---     PRIMARY KEY (id, created_time)
--- ) WITH CLUSTERING ORDER BY (created_time DESC);
-
--- set enable_user_defined_functions=true
---
--- CREATE OR REPLACE FUNCTION year (input DATE)
--- RETURNS NULL ON NULL INPUT RETURNS TEXT
--- LANGUAGE java AS 'return input.toString().substring(0,4);';
-
--- --Genesis block
--- INSERT INTO blockchain_by_year(year, id, created_time, hash, nonce, difficulty, previous_hash, merkle_root,
---                                transactions)
--- VALUES (2024, uuid(), totimestamp(now()), 'H45H-V4LV3', 0, 3, null, null, null)
