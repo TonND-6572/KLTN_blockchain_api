@@ -1,7 +1,6 @@
 package com.example.my_blockchain.model.entity.UDT;
 
 import org.springframework.data.cassandra.core.mapping.Column;
-import org.springframework.data.cassandra.core.mapping.Table;
 import org.springframework.data.cassandra.core.mapping.UserDefinedType;
 
 import lombok.*;

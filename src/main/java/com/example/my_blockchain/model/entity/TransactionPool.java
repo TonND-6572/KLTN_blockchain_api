@@ -1,6 +1,5 @@
 package com.example.my_blockchain.model.entity;
 
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
 import org.springframework.data.cassandra.core.mapping.Frozen;
@@ -18,9 +17,9 @@ import lombok.*;
 @ToString
 @Table(value="transaction_pool")
 public class TransactionPool {
-    @PrimaryKeyColumn(name = "transaction_id", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
+    @PrimaryKeyColumn(name = "sender_address", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
     @Id
-    public Long transactionId;
+    public String senderAddress;
 
     @Frozen
     public Transaction transaction;

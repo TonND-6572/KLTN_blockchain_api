@@ -9,9 +9,10 @@ import com.example.my_blockchain.model.entity.UDT.Output;
 import com.example.my_blockchain.model.entity.UDT.Transaction;
 
 public interface TransactionService {
-    TransactionPool createTransaction(Input input, List<Output> outputs, Long transaction_id);
+    TransactionPool createTransaction(Input input, List<Output> outputs);
     TransactionPool createTransaction(TransactionEventDTO event);
-    TransactionPool createTransaction(Input input, Output outputs, Long transaction_id);
+    TransactionPool createTransaction(Input input, Output outputs);
+    void createTransaction(List<Transaction> transactions);
     Transaction signTransaction(Transaction transaction);
     Boolean verifyTransaction(Transaction transaction);
     void clearTransactionPool();

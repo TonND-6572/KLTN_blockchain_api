@@ -14,8 +14,12 @@ import lombok.*;
 @ToString
 public class Output {
     String address;
+    Order orders;
+
     @Column("receiver_name")
     String receiverName;
-    Order orders;
-    TransactionStatus transaction_status; 
-}
+    @Column("transaction_id")
+    Long transactionId;
+    @Column("transaction_status")
+    TransactionStatus transactionStatus; 
+}    

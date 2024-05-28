@@ -2,14 +2,18 @@ package com.example.my_blockchain.consumer.dto;
 
 import java.util.List;
 
+import com.example.my_blockchain.model.entity.Enum.OrderStatus;
+
 public record OrderEvent(
     Long order_id,
-    String created_at,
-    String created_by,
+    String createdAt,
+    String createdBy,
     Float totalWeight,
     Float totalPrice,
+    Float subTotal,
+    Float feePaid,
     String note,
-    String status,
+    OrderStatus status,
     List<ItemAttributeEvent> items
 ) {
 } 

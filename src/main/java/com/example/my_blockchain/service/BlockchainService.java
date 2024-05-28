@@ -13,5 +13,14 @@ public interface BlockchainService {
     BlockchainResponse createBlock(Blockchain block);
     BlockchainResponse startMine();
     void toJson();
-    Boolean checkBlockchain();
+    /*
+     * return:
+     *   List of blockchain that are error
+     *   Or null if none of them
+     */
+    List<Blockchain> checkBlockchain();
+    /*
+     * remove invalid blocks from blockchain
+     */
+    void RestoreBlockchain(List<Blockchain> inValidBlocks);
 }

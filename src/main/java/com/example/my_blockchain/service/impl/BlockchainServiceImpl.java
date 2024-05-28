@@ -4,11 +4,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Type;
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.scheduling.annotation.Async;
@@ -28,7 +28,7 @@ import com.example.my_blockchain.service.BlockchainService;
 import com.example.my_blockchain.service.TransactionService;
 import com.example.my_blockchain.service.WalletService;
 import com.example.my_blockchain.util.BlockchainUtil;
-import com.example.my_blockchain.util.LocalDateTimeDeserializer;
+import com.example.my_blockchain.util.Configuration;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -75,7 +75,7 @@ public class BlockchainServiceImpl implements BlockchainService{
                     OrderTracking orderTracking = OrderTracking.builder()
                         .orderId(output.getOrders().getOrder_id())
                         .createdTime(output.getOrders().getCreated_at())
-                        .status(output.getTransaction_status())
+                        .status(output.getTransactionStatus())
                         .sender(sender)
                         .receiver(output.getAddress())
                         .receiverName(output.getReceiverName())
@@ -96,8 +96,6 @@ public class BlockchainServiceImpl implements BlockchainService{
     @Override
     public BlockchainResponse getLastBlock() {
         Blockchain block = blockchainRepository.findLastBlock();
-        // List<Blockchain> blocks = blockchainRepository.findAll();
-        // blocks.stream().forEach(a -> log.info("{}", a));
         return blockchainMapper.toResponse(block);
     }
 
@@ -121,6 +119,8 @@ public class BlockchainServiceImpl implements BlockchainService{
             if (transactionService.verifyTransaction(transaction)){
                 validTransactions.add(transaction);
             }
+
+            if (validTransactions.size() == Configuration.MAX_TRANSACTION) break;
         }
 
         Blockchain last_block = blockchainRepository.findLastBlock();
@@ -130,41 +130,36 @@ public class BlockchainServiceImpl implements BlockchainService{
     }
 
     @Override
-    public void toJson() {
-        List<Blockchain> blocks = blockchainRepository.findAll();
-        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new JsonDeserializer<LocalDateTime>() {
-            @Override
-            public LocalDateTime deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-                Instant instant = Instant.ofEpochMilli(json.getAsJsonPrimitive().getAsLong());
-                return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
-            }
-        }).create();
-
-
-        // Converts Java object to File
-        try (Writer writer = new FileWriter("blockchain.json")) {
-            gson.toJson(blocks, writer);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
+    public void RestoreBlockchain(List<Blockchain> inValidBlocks) {
+        List<BlockchainKey> uuids = inValidBlocks.stream().map(Blockchain::getBk).toList();
+        List<Transaction> transactions = inValidBlocks.stream().map(Blockchain::getTransactions)
+            .flatMap(List::stream).toList();
+        transactionService.createTransaction(transactions);
+        blockchainRepository.deleteAllById(uuids);
     }
 
     @Override
-    public Boolean checkBlockchain() {
+    public List<Blockchain> checkBlockchain() {
         List<Blockchain> blockchain = blockchainRepository.findAll();
+        List<Blockchain> inValidBlocks = new ArrayList<>();
+        Iterator<Blockchain> iterator = blockchain.iterator();
         String previousHash = "";
-        for (Blockchain block : blockchain) {
-            if (!checkBlock(previousHash, block)){
-                log.info(block.toString());
-                return false;
+
+        while (iterator.hasNext()) {
+            Blockchain block = iterator.next();
+            if (!isValidBlock(previousHash, block)){
+                log.info("{}", block.getBk().getUuid());
+                while (iterator.hasNext()){
+                    inValidBlocks.add(block);
+                }
+                
             }
             previousHash = block.getHash();
         }
-        return true;
+        return inValidBlocks;
     }
 
-    private Boolean checkBlock(String previousHash, Blockchain block){
+    private Boolean isValidBlock(String previousHash, Blockchain block){
         // check prev_hash
         if (!previousHash.equals(block.getPrevious_hash())){
             return false;
@@ -187,5 +182,26 @@ public class BlockchainServiceImpl implements BlockchainService{
         }
 
         return true;
+    }
+
+    @Override
+    public void toJson() {
+        List<Blockchain> blocks = blockchainRepository.findAll();
+        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new JsonDeserializer<LocalDateTime>() {
+            @Override
+            public LocalDateTime deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+                Instant instant = Instant.ofEpochMilli(json.getAsJsonPrimitive().getAsLong());
+                return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+            }
+        }).create();
+
+
+        // Converts Java object to File
+        try (Writer writer = new FileWriter("blockchain.json")) {
+            gson.toJson(blocks, writer);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
