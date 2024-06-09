@@ -8,6 +8,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -130,7 +131,7 @@ public class BlockchainServiceImpl implements BlockchainService{
     }
 
     @Override
-    public void RestoreBlockchain(List<Blockchain> inValidBlocks) {
+    public void restoreBlockchain(List<Blockchain> inValidBlocks) {
         List<BlockchainKey> uuids = inValidBlocks.stream().map(Blockchain::getBk).toList();
         List<Transaction> transactions = inValidBlocks.stream().map(Blockchain::getTransactions)
             .flatMap(List::stream).toList();
@@ -142,6 +143,7 @@ public class BlockchainServiceImpl implements BlockchainService{
     public List<Blockchain> checkBlockchain() {
         List<Blockchain> blockchain = blockchainRepository.findAll();
         List<Blockchain> inValidBlocks = new ArrayList<>();
+        Collections.reverse(blockchain);
         Iterator<Blockchain> iterator = blockchain.iterator();
         String previousHash = "";
 
@@ -149,10 +151,11 @@ public class BlockchainServiceImpl implements BlockchainService{
             Blockchain block = iterator.next();
             if (!isValidBlock(previousHash, block)){
                 log.info("{}", block.getBk().getUuid());
+                inValidBlocks.add(block);
                 while (iterator.hasNext()){
+                    block = iterator.next();
                     inValidBlocks.add(block);
                 }
-                
             }
             previousHash = block.getHash();
         }
@@ -160,7 +163,16 @@ public class BlockchainServiceImpl implements BlockchainService{
     }
 
     private Boolean isValidBlock(String previousHash, Blockchain block){
+        // checking hash
+        if (!Blockchain.calculateHash(block).equals(block.getHash())){
+            return false;
+        }
+        
         // check prev_hash
+        if (block.getPrevious_hash() == ""){ // genesis block
+            return true;
+        }
+
         if (!previousHash.equals(block.getPrevious_hash())){
             return false;
         }
@@ -173,11 +185,6 @@ public class BlockchainServiceImpl implements BlockchainService{
 
         // checking merkle root if block not a genesis block
         if (block.getNonce() > 0 && !BlockchainUtil.getMerkleRoot(block.getTransactions()).equals(block.getMerkle_root())){
-            return false;
-        }
-
-        // checking hash
-        if (!Blockchain.calculateHash(block).equals(block.getHash())){
             return false;
         }
 
@@ -194,7 +201,6 @@ public class BlockchainServiceImpl implements BlockchainService{
                 return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
             }
         }).create();
-
 
         // Converts Java object to File
         try (Writer writer = new FileWriter("blockchain.json")) {

@@ -30,13 +30,13 @@ public class ScheduledTask {
     public void scheduledMine(){
         try{
             log.info("----- start scheduled mining ----");
-            log.info("----- checking blockchain ----");
-            List<Blockchain> inValidBlocks = blockchainService.checkBlockchain();
-            if (inValidBlocks.size() > 0){
-                log.info("Invalid block at ", inValidBlocks.get(0).getBk().getUuid());
-                return;
-            }
-            log.info("----- finish checking blockchain ----");
+            // log.info("----- checking blockchain ----");
+            // List<Blockchain> inValidBlocks = blockchainService.checkBlockchain();
+            // if (inValidBlocks.size() > 0){
+            //     log.info("Invalid block at ", inValidBlocks.get(0).getBk().getUuid());
+            //     return;
+            // }
+            // log.info("----- finish checking blockchain ----");
             log.info("----- start mining ----");
             if (blockchainRepository.findAll().size() > 0){
                 BlockchainResponse block = blockchainService.startMine();

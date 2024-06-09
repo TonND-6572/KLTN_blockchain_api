@@ -22,5 +22,5 @@ public interface BlockchainService {
     /*
      * remove invalid blocks from blockchain
      */
-    void RestoreBlockchain(List<Blockchain> inValidBlocks);
+    void restoreBlockchain(List<Blockchain> inValidBlocks);
 }

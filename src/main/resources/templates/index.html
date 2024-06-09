@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{navbar.html}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive slider</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="../static/style.css">
+
+    <!-- JS -->
+    <script src="../script/include.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="blockchain-container">
+            <h2>Blockchain</h2>
+            <div class="blockchain-wrapper">
+                <div class="blockchain-line"></div>
+                <div class="block-wrapper">
+                    <div class="blockchain" id="blockchain"></div>
+                </div>
+            </div>
+        </div>
+        <div class="market-info-container">
+            <h2>Market Info</h2>
+            <div class="market-info">
+                <div class="info-item">
+                    <span>Market Cap</span>
+                    <span>$1,351,605,324,543</span>
+                </div>
+                <div class="info-item">
+                    <span>Diluted Market Cap</span>
+                    <span>$1,440,389,711,756</span>
+                </div>
+                <div class="info-item">
+                    <span>Vol 24h</span>
+                    <span>$26,870,333,095</span>
+                </div>
+                <div class="info-item">
+                    <span>Vol / Market Cap</span>
+                    <span>0.02</span>
+                </div>
+                <div class="info-item">
+                    <span>24h Change</span>
+                    <span class="positive">1.31%</span>
+                </div>
+                <div class="info-item">
+                    <span>1h Change</span>
+                    <span class="positive">0.83%</span>
+                </div>
+                <div class="info-item">
+                    <span>24h High</span>
+                    <span class="positive">$68,861.00</span>
+                </div>
+                <div class="info-item">
+                    <span>24h Low</span>
+                    <span class="negative">$67,121.00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>

@@ -1,0 +1,8 @@
+### note - run this if you want to use export json
+java --add-opens java.base/java.time=ALL-UNNAMED -jar target/my_blockchain-0.0.1-SNAPSHOT.jar
+
+### API - blockchain
+GET: localhost:8081/api-blockchain/blockchain/to-json
+GET: localhost:8081/api-blockchain/blockchain/checking
+GET: localhost:8081/api-blockchain/blockchain/restore
+GET: localhost:8081/api-blockchain/blockchain

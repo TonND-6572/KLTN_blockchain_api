@@ -1,0 +1,122 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #383838;
+  color: white;
+  font-family: Arial, sans-serif;
+  margin: 0;
+}
+
+.container{
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+  width: 800px;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.container .blockchain-container {
+  text-align: left;
+}
+
+.container .blockchain-wrapper {
+  padding: 20px;
+  /* border-radius: 10px; */
+  border: 1px solid #444;
+  white-space: nowrap;
+  width: 800px;
+  height: auto;
+  position: relative;
+  text-align: left;
+}
+
+.blockchain-wrapper .block-wrapper {
+  overflow-x: auto;
+  overflow: hidden;
+  position: relative;
+  height: 100px;
+}
+
+.blockchain {
+  display: inline-flex;
+}
+
+.block-wrapper .block {
+  width: 60px;
+  height: 60px;
+  margin: 0 10px;
+  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+  border-radius: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #333;
+  font-size: 12px;
+  font-weight: bold;
+  flex: 0 0 auto;
+  position: relative;
+}
+
+.block .block-content {
+  position: absolute;
+  bottom: -37px;
+  color: #fecfef;
+}
+
+.blockchain-wrapper .blockchain-line{
+  width: 94%;
+  height: 1px;
+  top: 40%;
+  background-color: rgb(153, 153, 153);
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  margin-left: 0px;
+}
+
+.block-wrapper:active {
+  cursor: grab;
+}
+
+.container .market-info-container {
+  text-align: left;
+}
+
+.market-info {
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  width: 800px;
+  height: auto;
+  justify-content: space-between;
+  /* border-radius: 10px; */
+  border: 1px solid #444;
+  position: relative;
+}
+
+.info-item {
+  width: 48%;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+}
+
+.info-item span:last-child {
+  font-weight: bold;
+}
+
+.positive {
+  color: #00ff00;
+}
+
+.negative {
+  color: #ff0000;
+}

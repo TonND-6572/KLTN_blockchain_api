@@ -3,9 +3,9 @@ package com.example.my_blockchain.service.impl;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.ResourceAccessException;
 
 import com.example.my_blockchain.model.entity.Wallet;
 import com.example.my_blockchain.model.entity.UDT.Transaction;
@@ -27,10 +27,10 @@ public class WalletServiceImpl implements WalletService {
     
     @Override
     @Transactional
-    public ResponseEntity<WalletResponse> createWallet(Wallet wallet) {
+    public WalletResponse createWallet(Wallet wallet) {
         walletRepository.save(wallet);
 
-        return ResponseEntity.ok(walletMapper.toResponse(wallet));
+        return walletMapper.toResponse(wallet);
     }
 
     @Override
@@ -64,6 +64,21 @@ public class WalletServiceImpl implements WalletService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    @Override
+    public WalletResponse get(String address) {
+        Wallet wallet = walletRepository.findByAddress(address);
+        try{ 
+            if (wallet == null) 
+                throw new ResourceAccessException("Wallet not found");
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return walletMapper.toResponse(wallet);
     }
     
 }
