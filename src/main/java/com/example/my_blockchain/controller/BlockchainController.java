@@ -3,7 +3,6 @@ package com.example.my_blockchain.controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.my_blockchain.model.entity.Blockchain;
-import com.example.my_blockchain.model.response.BlockchainResponse;
 import com.example.my_blockchain.service.BlockchainService;
 
 import lombok.RequiredArgsConstructor;
