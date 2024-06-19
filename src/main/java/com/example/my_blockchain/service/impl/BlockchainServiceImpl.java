@@ -8,6 +8,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -142,6 +143,7 @@ public class BlockchainServiceImpl implements BlockchainService{
     public List<Blockchain> checkBlockchain() {
         List<Blockchain> blockchain = blockchainRepository.findAll();
         List<Blockchain> inValidBlocks = new ArrayList<>();
+        Collections.reverse(blockchain);
         Iterator<Blockchain> iterator = blockchain.iterator();
         String previousHash = "";
 
@@ -151,8 +153,9 @@ public class BlockchainServiceImpl implements BlockchainService{
                 log.info("{}", block.getBk().getUuid());
                 while (iterator.hasNext()){
                     inValidBlocks.add(block);
+                    block = iterator.next();
                 }
-                
+                break;
             }
             previousHash = block.getHash();
         }

@@ -54,29 +54,35 @@ public class BlockchainUtil {
 
     //********Private Key*********//
 
-    public static String[] encryptPrivateKey(String msg, PrivateKey key) throws InvalidKeySpecException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
-        //Initialize salt
-        Random r = new SecureRandom();
-        byte[] salt = new byte[8];
-        r.nextBytes(salt);
+    public static String[] encryptPrivateKey(String msg, PrivateKey key){
+        try{
+             //Initialize salt
+            Random r = new SecureRandom();
+            byte[] salt = new byte[8];
+            r.nextBytes(salt);
 
-        //Initialize vector
-        byte[] vector = new byte[128/8];
-        r.nextBytes(vector);
+            //Initialize vector
+            byte[] vector = new byte[128/8];
+            r.nextBytes(vector);
 
-        //initialize variables
-        String MsgToEncrypt = getStringFromKey(key);
-        
-        //Generating AES key
-        Cipher ecipher = CryptoLib.createCipher(msg, salt, new IvParameterSpec(vector), Cipher.ENCRYPT_MODE);
+            //initialize variables
+            String MsgToEncrypt = getStringFromKey(key);
+            
+            //Generating AES key
+            Cipher ecipher = CryptoLib.createCipher(msg, salt, new IvParameterSpec(vector), Cipher.ENCRYPT_MODE);
 
-        //encrypttion
-        byte[] encrypted = ecipher.doFinal(MsgToEncrypt.getBytes());
-        byte[] concat = Util.concatenateByteArrays(salt, vector);
-        String salt_iv = CryptoLib.Encoded(concat);
-        String encrypted_str = CryptoLib.Encoded(encrypted);
+            //encrypttion
+            byte[] encrypted = ecipher.doFinal(MsgToEncrypt.getBytes());
+            byte[] concat = Util.concatenateByteArrays(salt, vector);
+            String salt_iv = CryptoLib.Encoded(concat);
+            String encrypted_str = CryptoLib.Encoded(encrypted);
 
-        return new String[] {salt_iv, encrypted_str};
+            return new String[] {salt_iv, encrypted_str};
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     public static PrivateKey getPrivateKey(String salt_iv, String encryptedPrivateKey, String userPin) throws InvalidKeySpecException {
