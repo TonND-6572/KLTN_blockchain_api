@@ -3,7 +3,6 @@ package com.example.my_blockchain.service.impl;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,10 +26,10 @@ public class WalletServiceImpl implements WalletService {
     
     @Override
     @Transactional
-    public ResponseEntity<WalletResponse> createWallet(Wallet wallet) {
+    public WalletResponse createWallet(Wallet wallet) {
         walletRepository.save(wallet);
 
-        return ResponseEntity.ok(walletMapper.toResponse(wallet));
+        return walletMapper.toResponse(wallet);
     }
 
     @Override
