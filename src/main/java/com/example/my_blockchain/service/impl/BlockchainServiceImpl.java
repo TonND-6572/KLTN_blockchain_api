@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -56,6 +57,11 @@ public class BlockchainServiceImpl implements BlockchainService{
     @Override
     public BlockchainResponse getBlock(BlockchainKey uuid) {
         return blockchainRepository.findById(uuid).map(blockchainMapper::toResponse).orElse(null);
+    }
+
+    @Override
+    public BlockchainResponse getBlock(UUID uuid) {
+        return blockchainMapper.toResponse(blockchainRepository.findByUUID(uuid));
     }
 
     @Override

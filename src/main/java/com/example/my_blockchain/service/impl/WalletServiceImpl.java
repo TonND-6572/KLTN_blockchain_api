@@ -3,7 +3,6 @@ package com.example.my_blockchain.service.impl;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,10 +26,10 @@ public class WalletServiceImpl implements WalletService {
     
     @Override
     @Transactional
-    public ResponseEntity<WalletResponse> createWallet(Wallet wallet) {
+    public WalletResponse createWallet(Wallet wallet) {
         walletRepository.save(wallet);
 
-        return ResponseEntity.ok(walletMapper.toResponse(wallet));
+        return walletMapper.toResponse(wallet);
     }
 
     @Override
@@ -48,8 +47,12 @@ public class WalletServiceImpl implements WalletService {
     @Transactional
     public Wallet addTransaction(String address, Transaction transaction) {
         try {
+            if (address == "END_USER") return null;
+
             Wallet wallet = walletRepository.findByAddress(address);
-            if (wallet == null) throw new Exception();
+            if (wallet == null)
+                throw new RuntimeException(String.format("Wallet with address %s not found", address));
+            
             List<Transaction> transactions = wallet.getTransactions();
             if (transactions == null) {
                 transactions = Collections.singletonList(transaction);

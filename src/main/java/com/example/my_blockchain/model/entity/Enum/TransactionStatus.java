@@ -6,5 +6,5 @@ public enum TransactionStatus {
     TRANSPORTING,
     TRANSPORTED,
     DELIVERING,
-    DELIVERIED
+    DELIVERED
 }
