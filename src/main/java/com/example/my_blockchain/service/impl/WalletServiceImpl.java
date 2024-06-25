@@ -47,8 +47,12 @@ public class WalletServiceImpl implements WalletService {
     @Transactional
     public Wallet addTransaction(String address, Transaction transaction) {
         try {
+            if (address == "END_USER") return null;
+
             Wallet wallet = walletRepository.findByAddress(address);
-            if (wallet == null) throw new Exception();
+            if (wallet == null)
+                throw new RuntimeException(String.format("Wallet with address %s not found", address));
+            
             List<Transaction> transactions = wallet.getTransactions();
             if (transactions == null) {
                 transactions = Collections.singletonList(transaction);
