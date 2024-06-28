@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.scheduling.annotation.Async;
@@ -89,6 +90,7 @@ public class BlockchainServiceImpl implements BlockchainService{
                         .build();
                     
                     orderTrackingRepository.save(orderTracking);
+                    if (output.getAddress().equals(sender) || output.getAddress().equals("END_USER")) continue;
                     walletService.addTransaction(output.getAddress(), transaction);
                 }
 
@@ -161,6 +163,7 @@ public class BlockchainServiceImpl implements BlockchainService{
                     inValidBlocks.add(block);
                     block = iterator.next();
                 }
+                inValidBlocks.add(block);
                 break;
             }
             previousHash = block.getHash();
@@ -169,10 +172,19 @@ public class BlockchainServiceImpl implements BlockchainService{
     }
 
     private Boolean isValidBlock(String previousHash, Blockchain block){
-        // check prev_hash
-        if (!previousHash.equals(block.getPrevious_hash())){
+        // checking hash
+        if (!Blockchain.calculateHash(block).equals(block.getHash())){
             return false;
         }
+        
+        // check prev_hash
+        if (!block.getPrevious_hash().equals(previousHash)){
+            return false;
+        }
+
+        // checking genesis block
+        if (previousHash.equals("") &&
+                block.getMerkle_root().equals("")) return true; 
 
         // checking hash with difficulty
         if (!block.getHash().substring(0, block.getDifficulty())
@@ -181,14 +193,11 @@ public class BlockchainServiceImpl implements BlockchainService{
         }   
 
         // checking merkle root if block not a genesis block
-        if (block.getNonce() > 0 && !BlockchainUtil.getMerkleRoot(block.getTransactions()).equals(block.getMerkle_root())){
+        if (block.getNonce() > 0 && 
+            !BlockchainUtil.getMerkleRoot(block.getTransactions()).equals(block.getMerkle_root())){
             return false;
         }
 
-        // checking hash
-        if (!Blockchain.calculateHash(block).equals(block.getHash())){
-            return false;
-        }
 
         return true;
     }
