@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.my_blockchain.model.entity.Wallet;
 import com.example.my_blockchain.model.entity.UDT.Transaction;
 import com.example.my_blockchain.model.mapper.WalletMapper;
+import com.example.my_blockchain.model.request.WalletGetRequest;
 import com.example.my_blockchain.model.response.WalletResponse;
 import com.example.my_blockchain.repo.WalletRepository;
 import com.example.my_blockchain.service.WalletService;
@@ -33,8 +34,8 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public Wallet getWallet(String address) {
-        Wallet wallet = walletRepository.findByAddress(address);
+    public Wallet getWallet(WalletGetRequest req) {
+        Wallet wallet = walletRepository.findByAddress(req.address());
         if (wallet != null) {
             wallet.genKey();
             return wallet;

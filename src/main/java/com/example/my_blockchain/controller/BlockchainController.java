@@ -13,6 +13,8 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 
@@ -40,6 +42,16 @@ public class BlockchainController {
     @GetMapping("")
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(blockchainService.getAll());
+    }
+    
+    @GetMapping("/restore")
+    public ResponseEntity<?> restoreBlockchain() {
+        List<Blockchain> inValidBlocks = blockchainService.checkBlockchain();
+        if (inValidBlocks.size() == 0) {
+            return ResponseEntity.ok("Blockchain is valid!!! Nothing changed");
+        }
+        blockchainService.RestoreBlockchain(inValidBlocks);
+        return ResponseEntity.ok("restore success");
     }
     
 }
