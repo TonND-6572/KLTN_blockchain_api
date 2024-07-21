@@ -1,12 +1,9 @@
 package com.example.my_blockchain.service;
 
-import java.util.List;
-
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.example.my_blockchain.model.entity.Blockchain;
 import com.example.my_blockchain.model.response.BlockchainResponse;
 import com.example.my_blockchain.repo.BlockchainRepository;
 import com.example.my_blockchain.util.Configuration;
