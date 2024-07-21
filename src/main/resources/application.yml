@@ -18,3 +18,14 @@ rabbitmq:
     create-transaction-queue: ${CREATE_TRANSACTION_QUEUE:"create-transaction-queue"}
 server:
     port: 8081
+
+# logging:
+#   level:
+#     root: INFO
+#     org:
+#       springframework:
+#         data:
+#           cassandra:
+#             core:
+#               cql:
+#                 CqlTemplate: DEBUG

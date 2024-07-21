@@ -1,6 +1,7 @@
 package com.example.my_blockchain.controller;
 
 import com.example.my_blockchain.model.entity.Blockchain;
+import com.example.my_blockchain.model.request.BlockGetRequest;
 import com.example.my_blockchain.service.BlockchainService;
 
 import lombok.RequiredArgsConstructor;
@@ -12,11 +13,8 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestParam;
-
-
-
 
 @RestController
 @RequestMapping("/api-blockchain/blockchain")
@@ -54,4 +52,9 @@ public class BlockchainController {
         return ResponseEntity.ok("restore success");
     }
     
+    @GetMapping("/detail")
+    public ResponseEntity<?> getBlock(BlockGetRequest req) {
+        
+        return ResponseEntity.ok(blockchainService.getBlock(req));
+    }
 }

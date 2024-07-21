@@ -1,35 +1,30 @@
 version: "3.5"
 
-networks:
-  cassandra-net:
-    driver: bridge 
-
 services:
-  cassandra1:
-    image: cassandra:latest
+  cassandradb:
+    image: cassandra:3.11 # Use the official Cassandra image from Docker Hub
+    container_name: cassandra-container
     ports:
-      - 7000:7000
-      - 9042:9042
-    container_name: "cassandra-1"
-    networks:
-      cassandra-net:
+      - "9042:9042" # Expose Cassandra's default port
     volumes:
-      - cassandra1-data:/var/lib/cassandra
+      - ./cassandra_data:/var/lib/cassandra # Persist Cassandra data outside the container
     environment:
-      - CASSANDRA_START_RPC=true       # default
-      - CASSANDRA_RPC_ADDRESS=0.0.0.0  # default
-      - CASSANDRA_LISTEN_ADDRESS=auto  # default, use IP addr of container # = CASSANDRA_BROADCAST_ADDRESS
-      - CASSANDRA_CLUSTER_NAME=my-cluster
-      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
-      - CASSANDRA_DC=my-datacenter-1
-    restart:
-      on-failure
-    healthcheck:
-      test: ["CMD-SHELL", "nodetool status"]
-      interval: 2m
-      start_period: 2m
-      timeout: 10s
-      retries: 3
-    
-volumes:
-  cassandra1-data:
+      - MAX_HEAP_SIZE=512M # Optional: set Cassandra heap size
+      - HEAP_NEWSIZE=100M  # Optional: set Cassandra new generation heap size
+    networks:
+      - cassandra_network
+  cassandradb2:
+    image: cassandra:3.11 # Use the official Cassandra image from Docker Hub
+    container_name: cassandra-container2
+    volumes:
+      - ./cassandra_data2:/var/lib/cassandra # Persist Cassandra data outside the container
+    environment:
+      - MAX_HEAP_SIZE=512M # Optional: set Cassandra heap size
+      - HEAP_NEWSIZE=100M  # Optional: set Cassandra new generation heap size
+      - CASSANDRA_SEEDS=cassandra-container
+    networks:
+      - cassandra_network
+
+networks:
+  cassandra_network:
+    driver: bridge

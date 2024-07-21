@@ -7,12 +7,13 @@ import java.lang.reflect.Type;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import com.example.my_blockchain.model.entity.UDT.Output;
 import com.example.my_blockchain.model.entity.UDT.Transaction;
 import com.example.my_blockchain.model.entity.compositeKey.BlockchainKey;
 import com.example.my_blockchain.model.mapper.BlockchainMapper;
+import com.example.my_blockchain.model.request.BlockGetRequest;
 import com.example.my_blockchain.model.response.BlockchainResponse;
 import com.example.my_blockchain.repo.BlockchainRepository;
 import com.example.my_blockchain.repo.OrderTrackingRepository;
@@ -56,18 +58,29 @@ public class BlockchainServiceImpl implements BlockchainService{
     private final BlockchainMapper blockchainMapper;
 
     @Override
-    public BlockchainResponse getBlock(BlockchainKey uuid) {
-        return blockchainRepository.findById(uuid).map(blockchainMapper::toResponse).orElse(null);
+    public BlockchainResponse getBlock(BlockGetRequest request) {
+        Instant instant = request.createdTime().minusHours(7).toInstant(ZoneOffset.UTC);
+        System.out.println(instant);
+        Date date = Date.from(instant);
+        Blockchain block = blockchainRepository.getBlockDetail(request.year(), date, request.uuid());
+        
+        if (block == null) {
+            throw new RuntimeException("Block not found");
+        }
+        return blockchainMapper.toResponse(block);
     }
 
-    @Override
-    public BlockchainResponse getBlock(UUID uuid) {
-        return blockchainMapper.toResponse(blockchainRepository.findByUUID(uuid));
+    public BlockchainResponse getBlock(BlockchainKey uuid) {
+        return blockchainRepository.findById(uuid)
+            .map(blockchainMapper::toResponse).orElse(null);
     }
 
     @Override
     public List<BlockchainResponse> getAll() {
-      return blockchainRepository.findAll().stream().map(blockchainMapper::toResponse).toList();
+      return blockchainRepository.findAll().stream()
+        .map(block ->toResponse(block))
+        .limit(10)
+        .toList();
     }
 
     @Override
@@ -220,6 +233,15 @@ public class BlockchainServiceImpl implements BlockchainService{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
 
+    private BlockchainResponse toResponse(Blockchain block){
+        BlockchainResponse blockchainResponse = blockchainMapper.toResponse(block);
+        ZoneId zoneId = ZoneId.systemDefault();
+        block.getBk().getCreatedTime().atZone(zoneId);
+        Instant instant = block.getBk().getCreatedTime().minusHours(7).toInstant(ZoneOffset.UTC);
+        Date date = Date.from(instant);
+        
+        return blockchainResponse.setCreatedTime(date);
     }
 }

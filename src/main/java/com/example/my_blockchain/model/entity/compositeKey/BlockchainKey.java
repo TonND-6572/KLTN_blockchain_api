@@ -19,7 +19,7 @@ import lombok.*;
 @PrimaryKeyClass
 @Data
 public class BlockchainKey implements Serializable{
-    @PrimaryKeyColumn(name = "id", ordinal = 2, type = PrimaryKeyType.PARTITIONED)
+    @PrimaryKeyColumn(name = "id", ordinal = 2, type = PrimaryKeyType.CLUSTERED, ordering = Ordering.ASCENDING)
     @CassandraType(type = CassandraType.Name.UUID)
     private UUID uuid = BlockchainUtil.generateUUID();
     

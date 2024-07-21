@@ -1,15 +1,13 @@
 package com.example.my_blockchain.service;
 
 import java.util.List;
-import java.util.UUID;
 
 import com.example.my_blockchain.model.entity.Blockchain;
-import com.example.my_blockchain.model.entity.compositeKey.BlockchainKey;
+import com.example.my_blockchain.model.request.BlockGetRequest;
 import com.example.my_blockchain.model.response.BlockchainResponse;
 
 public interface BlockchainService {
-    BlockchainResponse getBlock(BlockchainKey uuid);
-    BlockchainResponse getBlock(UUID uuid);
+    BlockchainResponse getBlock(BlockGetRequest request);
     BlockchainResponse getLastBlock();
     List<BlockchainResponse> getAll();
     BlockchainResponse createBlock(Blockchain block);
